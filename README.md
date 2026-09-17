@@ -30,7 +30,7 @@ UI は HTML をドロップするダッシュボードです。
 
 **`CLOUDFLARE_ACCOUNT_ID` の確認**
 
-Workers の概要ページ右サイドバー、またはダッシュボード URL の `dash.cloudflare.com/<ACCOUNT_ID>/...` です。
+Workers の概要ページ右サイドバー、またはダッシュボード URL の `dash.cloudflare.com/<ACCOUNT_ID>/...` です。トークンと同じアカウントの ID にしてください。別アカウントの D1（`research-host-db`）を指定すると Deploy が 7403 で落ちます。
 
 ### 2. Deploy を再実行する
 
@@ -44,12 +44,13 @@ secret を入れたあと:
 `main` への push では次の順で動きます。
 
 1. typecheck / test（PR Checks）
-2. `wrangler d1 migrations apply DB --remote`（D1 `research-host-db`）
-3. `wrangler deploy`（Worker 名 **`html-hosting-myself`**）
+2. D1 `html-hosting-myself-db` と R2 `html-hosting-myself` を、secrets のアカウントに無ければ作成する
+3. `wrangler d1 migrations apply DB --remote`
+4. `wrangler deploy`（Worker 名 **`html-hosting-myself`**）
 
 ### 3. workers.dev を開いて HTML を置く
 
-デプロイ後の URL:
+デプロイ後の URL（アカウントの workers.dev サブドメイン）:
 
 **https://html-hosting-myself.kaito-technology.workers.dev**
 
@@ -69,11 +70,13 @@ pnpm exec wrangler secret put API_TOKEN
 
 - **Worker**: Hono on Cloudflare Workers（ダッシュボードは `public/` の静的 HTML/CSS/JS）
 - **Worker 名**: `html-hosting-myself`
-- **オブジェクトストレージ**: Cloudflare R2 バケット `research-host`（binding `BUCKET`）
-- **メタデータ**: Cloudflare D1 `research-host-db`（id `8aabd19d-7950-4a92-b33c-4ba9d3f7d42c`）+ Drizzle ORM
+- **オブジェクトストレージ**: Cloudflare R2 バケット `html-hosting-myself`（binding `BUCKET`）。Deploy が GitHub secrets のアカウントに作成する
+- **メタデータ**: Cloudflare D1 `html-hosting-myself-db` + Drizzle ORM。UUID は Deploy が作成時に解決する
 - **認証**: Cloudflare Access ヘッダ、または `Authorization: Bearer <API_TOKEN>`。どちらも未設定の初回はダッシュボード書き込みを許可する
 - **テスト**: vitest + @cloudflare/vitest-pool-workers
 - **Observability**: Workers Logs / Metrics が既定で ON
+
+`research-host-db` / `research-host` は別 Cloudflare アカウントのリソースです。このリポジトリの CI からは使いません。
 
 ## ローカル開発
 

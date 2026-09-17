@@ -2,7 +2,9 @@
  * Wrangler 設定の詳細: https://developers.cloudflare.com/workers/wrangler/configuration/
  *
  * Worker 名は `html-hosting-myself`（このリポジトリ専用）。
- * D1 / R2 はホスティング用リソース（research-host-db / research-host）をバインドする。
+ * D1 / R2 は GitHub secrets の CLOUDFLARE_ACCOUNT_ID 側に作る。
+ * research-host-db（8aabd19d-7950-4a92-b33c-4ba9d3f7d42c）は別アカウントにあり、
+ * CI から触ると Cloudflare API 7403 になるため使わない。
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -22,8 +24,7 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "research-host-db",
-      "database_id": "8aabd19d-7950-4a92-b33c-4ba9d3f7d42c",
+      "database_name": "html-hosting-myself-db",
       "migrations_dir": "migrations",
       "migrations_table": "d1_migrations",
     },
@@ -31,7 +32,7 @@
   "r2_buckets": [
     {
       "binding": "BUCKET",
-      "bucket_name": "research-host",
+      "bucket_name": "html-hosting-myself",
     },
   ],
   // 期限切れホストの掃除（UTC 4:00）。個別 GET 時にも期限切れなら 410 を返す
