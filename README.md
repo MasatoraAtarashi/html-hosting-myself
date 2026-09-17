@@ -71,7 +71,7 @@ pnpm exec wrangler secret put API_TOKEN
 - **Worker 名**: `html-hosting-myself`
 - **オブジェクトストレージ**: Cloudflare R2 バケット `research-host`（binding `BUCKET`）
 - **メタデータ**: Cloudflare D1 `research-host-db`（id `8aabd19d-7950-4a92-b33c-4ba9d3f7d42c`）+ Drizzle ORM
-- **認証**: Cloudflare Access ヘダ、または `Authorization: Bearer <API_TOKEN>`。どちらも未設定の初回はダッシュボード書き込みを許可する
+- **認証**: Cloudflare Access ヘッダ、または `Authorization: Bearer <API_TOKEN>`。どちらも未設定の初回はダッシュボード書き込みを許可する
 - **テスト**: vitest + @cloudflare/vitest-pool-workers
 - **Observability**: Workers Logs / Metrics が既定で ON
 
@@ -104,7 +104,7 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
   -F "ttl=7d"
 ```
 
-`API_TOKEN` が未設定のときは、Authorization ヘダなしでも同じフォームを送れます。
+`API_TOKEN` が未設定のときは、Authorization ヘッダなしでも同じフォームを送れます。
 
 | メソッド | パス               | 内容                                                             |
 | -------- | ------------------ | ---------------------------------------------------------------- |
@@ -132,5 +132,5 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
 
 ## エージェント向け
 
-- ルール・MCPーhooks は `.rulesync/` が正本。変更したら `pnpm dlx rulesync generate --targets "*"` で各エージェント設定を再生成する
+- ルール・MCP・hooks は `.rulesync/` が正本。変更したら `pnpm dlx rulesync generate --targets "*"` で各エージェント設定を再生成する
 - MCP: cloudflare-docs（認証不要）/ cloudflare-observability（初回 OAuth）が既定で入っている
