@@ -7,3 +7,23 @@ settings:
 overrides:
   js-yaml: '>=4.3.2'
   sharp: '>=0.35.4'
+
+importers:
+
+  .:
+    dependencies:
+      '@hono/zod-validator':
+        specifier: ^0.9.0
+        version: 0.9.0(hono@4.13.3)(zod@4.4.3)
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2
+      fflate:
+        specifier: ^0.8.2
+        version: 0.8.3
+      hono:
+        specifier: ^4.13.2
+        version: 4.13.3
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
