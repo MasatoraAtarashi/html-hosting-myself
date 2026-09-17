@@ -1,0 +1,54 @@
+{
+  "name": "html-hosting-myself",
+  "description": "自分用の AI 生成物・静的ファイルホスティング — Hono on Cloudflare Workers / R2 + D1 + Drizzle",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "tsc --noEmit",
+    "predeploy": "wrangler d1 migrations apply DB --remote",
+    "deploy": "pnpm build && wrangler deploy",
+    "typecheck": "pnpm cf-typegen && tsc --noEmit",
+    "test": "vitest run",
+    "lint": "prettier --check .",
+    "format": "prettier --write .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "cf-typegen": "wrangler types",
+    "security:ash": "ash --mode local --config .ash.yml"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.9.0",
+    "drizzle-orm": "^0.45.2",
+    "fflate": "^0.8.2",
+    "hono": "^4.13.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.21.2",
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@types/node": "^24.10.1",
+    "drizzle-kit": "^0.31.10",
+    "lefthook": "^2.1.10",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.0.0",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.122.0"
+  },
+  "packageManager": "pnpm@10.30.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lefthook",
+      "workerd",
+      "sharp"
+    ],
+    "overrides": {
+      "js-yaml": ">=4.3.2",
+      "sharp": ">=0.35.4"
+    }
+  }
+}

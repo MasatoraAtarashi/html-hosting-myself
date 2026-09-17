@@ -1,0 +1,41 @@
+/**
+ * Wrangler 設定の詳細: https://developers.cloudflare.com/workers/wrangler/configuration/
+ *
+ * Worker 名は `html-hosting-myself`（このリポジトリ専用）。
+ * D1 / R2 はホスティング用リソース（research-host-db / research-host）をバインドする。
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "html-hosting-myself",
+  "compatibility_date": "2025-10-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./workers/app.ts",
+  // public/ 以下を Workers Static Assets として配信。アセットに無いパス（/api/* /p/*）だけ Worker に届く
+  "assets": {
+    "directory": "./public",
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+  },
+  "upload_source_maps": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "research-host-db",
+      "database_id": "8aabd19d-7950-4a92-b33c-4ba9d3f7d42c",
+      "migrations_dir": "migrations",
+      "migrations_table": "d1_migrations",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "research-host",
+    },
+  ],
+  // 期限切れホストの掃除（UTC 4:00）。個別 GET 時にも期限切れなら 410 を返す
+  "triggers": {
+    "crons": ["0 4 * * *"],
+  },
+}

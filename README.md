@@ -132,5 +132,5 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
 
 ## エージェント向け
 
-- ルール・MCP・hooks は `.rulesync/` が正本。変更したら `pnpm dlx rulesync generate --targets "*"` で各エージェント設定を再生成する
+- ルール・MCPーhooks は `.rulesync/` が正本。変更したら `pnpm dlx rulesync generate --targets "*"` で各エージェント設定を再生成する
 - MCP: cloudflare-docs（認証不要）/ cloudflare-observability（初回 OAuth）が既定で入っている
