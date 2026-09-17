@@ -1,0 +1,29 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "git status": true,
+    "git diff": true,
+    "git log": true,
+    "git branch": true,
+    "pnpm run *": true,
+    "pnpm test": true,
+    "pnpm typecheck": true,
+    "rm -rf *": false
+  },
+  "chat.tools.edits.autoApprove": {
+    "src/**": true,
+    "app/**": true,
+    "server/**": true,
+    "db/**": true,
+    "test/**": true
+  },
+  "zoo-code.allowedCommands": [
+    "git status",
+    "git diff",
+    "git log",
+    "git branch",
+    "pnpm run *",
+    "pnpm test",
+    "pnpm typecheck"
+  ],
+  "zoo-code.deniedCommands": ["rm -rf *"]
+}
