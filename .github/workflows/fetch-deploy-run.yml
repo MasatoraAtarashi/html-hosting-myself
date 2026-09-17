@@ -30,11 +30,11 @@ jobs:
         run: |
           set -euo pipefail
           {
-            echo "# latest runs on main $(date -u +%H:%M:%S)"
+            echo "# latest runs on main $(date -u +%H:%M:%S) poll3"
             echo "## deploy.yml"
-            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/deploy.yml/runs?branch=main&per_page=2" --jq '.workflow_runs[] | {id,status,conclusion,head_sha,html_url,created_at,display_title}'
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/deploy.yml/runs?branch=main&per_page=1" --jq '.workflow_runs[] | {id,status,conclusion,head_sha,html_url,created_at,display_title}'
             echo "## pr.yml"
-            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/pr.yml/runs?branch=main&per_page=2" --jq '.workflow_runs[] | {id,status,conclusion,head_sha,html_url,created_at,display_title}'
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/pr.yml/runs?branch=main&per_page=1" --jq '.workflow_runs[] | {id,status,conclusion,head_sha,html_url,created_at,display_title}'
             echo "## jobs for latest pr.yml"
             PR_ID=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/pr.yml/runs?branch=main&per_page=1" --jq '.workflow_runs[0].id')
             echo "pr run $PR_ID"
@@ -42,10 +42,6 @@ jobs:
             echo "## failed logs pr.yml"
             gh run view "$PR_ID" --repo "$GITHUB_REPOSITORY" --log-failed >> /tmp/pr-failed.log 2>&1 || true
             tail -n 80 /tmp/pr-failed.log
-            echo "## jobs for latest deploy.yml"
-            DEP_ID=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/deploy.yml/runs?branch=main&per_page=1" --jq '.workflow_runs[0].id')
-            echo "deploy run $DEP_ID"
-            gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${DEP_ID}/jobs" --jq '.jobs[] | {id,name,status,conclusion}'
           } > ci-run-latest.txt
 
       - name: Commit dump
