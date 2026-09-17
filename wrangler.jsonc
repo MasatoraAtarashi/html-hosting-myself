@@ -2,9 +2,9 @@
  * Wrangler 設定の詳細: https://developers.cloudflare.com/workers/wrangler/configuration/
  *
  * Worker 名は `html-hosting-myself`（このリポジトリ専用）。
- * D1 / R2 は GitHub secrets の CLOUDFLARE_ACCOUNT_ID 側に作る。
- * research-host-db（8aabd19d-7950-4a92-b33c-4ba9d3f7d42c）は別アカウントにあり、
- * CI から触ると Cloudflare API 7403 になるため使わない。
+ * D1 `html-hosting-myself-db` と R2 `html-hosting-myself` はトークンと同じアカウントに置く。
+ * GitHub の CLOUDFLARE_API_TOKEN には D1:Edit が無く、CI からの d1 create/list は 10000 になる。
+ * database_id はリポジトリに固定し、スキーマは事前適用済み。CI は wrangler deploy のみ行う。
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -25,6 +25,7 @@
     {
       "binding": "DB",
       "database_name": "html-hosting-myself-db",
+      "database_id": "4e2d30d2-fbf4-4fc5-a63b-ac36edb023da",
       "migrations_dir": "migrations",
       "migrations_table": "d1_migrations",
     },

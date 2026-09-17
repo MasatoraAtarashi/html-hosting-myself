@@ -44,7 +44,7 @@ jobs:
       - name: Build
         run: pnpm build
 
-      # wrangler-action は apiToken が空だと CLOUDFLARE_API_TOKEN を渡さず、D1 migrate で落ちる。
+      # wrangler-action は apiToken が空だと CLOUDFLARE_API_TOKEN を渡さず、deploy で落ちる。
       # シークレット名は既存のまま。空ならここで明示的に失敗させる。
       - name: Require Cloudflare secrets
         env:
@@ -53,7 +53,7 @@ jobs:
         run: |
           missing=0
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "::error::GitHub Actions secret CLOUDFLARE_API_TOKEN が空です。Settings → Secrets and variables → Actions に設定し、Deploy を Re-run してください（権限: Workers Scripts:Edit / D1:Edit / Workers R2 Storage:Edit）。デプロイ先 Worker 名は html-hosting-myself です。"
+            echo "::error::GitHub Actions secret CLOUDFLARE_API_TOKEN が空です。Settings → Secrets and variables → Actions に設定し、Deploy を Re-run してください（権限: Workers Scripts:Edit / Workers R2 Storage:Edit。D1:Edit は任意）。デプロイ先 Worker 名は html-hosting-myself です。"
             missing=1
           fi
           if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
@@ -64,64 +64,22 @@ jobs:
             exit 1
           fi
 
-      # research-host-db は別アカウントのため 7403 になる。このトークンが触れるアカウントに D1/R2 を作る。
-      - name: Provision D1 and R2
+      # D1 create/list はこのトークンで 10000（D1:Edit なし）。R2 は作成済み。
+      # バケットが無いときだけ作る。既存なら wrangler が非 0 でも続行する。
+      - name: Ensure R2 bucket
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set +e
           pnpm exec wrangler whoami
-          echo "Ensuring D1 html-hosting-myself-db exists..."
-          pnpm exec wrangler d1 create html-hosting-myself-db
-          echo "Ensuring R2 html-hosting-myself exists..."
           pnpm exec wrangler r2 bucket create html-hosting-myself
           set -e
-          pnpm exec wrangler d1 list --json > /tmp/d1-list.json
-          python3 <<'PY'
-          from pathlib import Path
-          import json
-          raw = Path("/tmp/d1-list.json").read_text()
-          start_candidates = [i for i in (raw.find("["), raw.find("{")) if i >= 0]
-          if not start_candidates:
-              raise SystemExit(f"wrangler d1 list --json が JSON を返しませんでした:\n{raw}")
-          data = json.loads(raw[min(start_candidates):])
-          if isinstance(data, dict):
-              data = data.get("result") or data.get("databases") or []
-          db = next((x for x in data if x.get("name") == "html-hosting-myself-db"), None)
-          if not db:
-              names = [x.get("name") for x in data]
-              raise SystemExit(
-                  "D1 html-hosting-myself-db を作成できませんでした。"
-                  "CLOUDFLARE_ACCOUNT_ID がトークンのアカウントと不一致か、トークンに D1:Edit がありません。"
-                  f" list={names}"
-              )
-          uid = db.get("uuid") or db.get("id")
-          path = Path("wrangler.jsonc")
-          text = path.read_text()
-          needle = '"database_name": "html-hosting-myself-db",'
-          if '"database_id"' not in text.split(needle, 1)[-1][:180]:
-              text = text.replace(
-                  needle,
-                  needle + f'\n      "database_id": "{uid}",',
-                  1,
-              )
-              path.write_text(text)
-          print(f"Using D1 html-hosting-myself-db id={uid}")
-          PY
+          echo "R2 html-hosting-myself is ready (created or already existed)."
 
       # 認証は API トークン方式（Cloudflare は wrangler デプロイ用 OIDC を未提供、2026-08 時点）。
-      # トークンは Workers Scripts 編集の最小権限にすること。R2 を使うので Workers R2 Storage: Edit も必要。
-      - name: Apply D1 migrations
-        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: d1 migrations apply DB --remote
-
+      # D1:Edit が無いトークンでは migrate が 10000 になるため、スキーマはリポジトリ外で適用済み。
+      # ここは Worker 本体と D1/R2 バインディングのデプロイのみ。
       - name: Deploy
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
         env:
