@@ -1,17 +1,11 @@
-# latest runs on main 08:10:03
+# latest runs on main 08:14:17 poll3
 ## deploy.yml
 {"conclusion":"success","created_at":"2026-09-17T08:02:38Z","display_title":"fix: restore ヘッダ spelling in README","head_sha":"af5d84a03eaec12eb5ddc9c93a2d0b99b5dec388","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197576106","id":35197576106,"status":"completed"}
-{"conclusion":"success","created_at":"2026-09-17T08:01:31Z","display_title":"style: format README.md with Prettier","head_sha":"ada58810bf1b826e288947272ee1a53f9f7b6fa6","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197479870","id":35197479870,"status":"completed"}
 ## pr.yml
-{"conclusion":null,"created_at":"2026-09-17T08:02:38Z","display_title":"fix: restore ヘッダ spelling in README","head_sha":"af5d84a03eaec12eb5ddc9c93a2d0b99b5dec388","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197576045","id":35197576045,"status":"in_progress"}
-{"conclusion":"cancelled","created_at":"2026-09-17T08:01:31Z","display_title":"style: format README.md with Prettier","head_sha":"ada58810bf1b826e288947272ee1a53f9f7b6fa6","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197479909","id":35197479909,"status":"completed"}
+{"conclusion":"success","created_at":"2026-09-17T08:02:38Z","display_title":"fix: restore ヘッダ spelling in README","head_sha":"af5d84a03eaec12eb5ddc9c93a2d0b99b5dec388","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197576045","id":35197576045,"status":"completed"}
 ## jobs for latest pr.yml
 pr run 35197576045
 {"completed_at":"2026-09-17T08:04:12Z","conclusion":"success","id":105124430397,"name":"ASH Security Scan","started_at":"2026-09-17T08:02:58Z","status":"completed"}
 {"completed_at":"2026-09-17T08:03:45Z","conclusion":"success","id":105124430639,"name":"Typecheck / Lint / Test","started_at":"2026-09-17T08:02:58Z","status":"completed"}
-{"completed_at":null,"conclusion":null,"id":105124430654,"name":"gitleaks / zizmor / audit","started_at":"2026-09-17T08:02:58Z","status":"in_progress"}
+{"completed_at":"2026-09-17T08:11:50Z","conclusion":"success","id":105124430654,"name":"gitleaks / zizmor / audit","started_at":"2026-09-17T08:02:58Z","status":"completed"}
 ## failed logs pr.yml
-run 35197576045 is still in progress; logs will be available when it is complete
-## jobs for latest deploy.yml
-deploy run 35197576106
-{"conclusion":"success","id":105124436617,"name":"Build \u0026 Deploy to Cloudflare Workers","status":"completed"}
