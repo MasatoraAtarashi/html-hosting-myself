@@ -1,0 +1,79 @@
+name: Fetch Deploy run logs
+
+on:
+  push:
+    branches: [cursor/fetch-deploy-logs-c375]
+    paths-ignore:
+      - "ci-run-*.txt"
+      - "ci-run-*.json"
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: fetch-deploy-run-logs
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    name: Dump run 35195353422
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Fetch workflow run metadata and logs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: "35195353422"
+        run: |
+          set -euo pipefail
+          echo "# run $RUN_ID" > ci-run-${RUN_ID}.txt
+          echo "## metadata" >> ci-run-${RUN_ID}.txt
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" > ci-run-${RUN_ID}.json
+          python3 - <<'PY' >> ci-run-${RUN_ID}.txt
+          import json
+          from pathlib import Path
+          run = json.loads(Path("ci-run-35195353422.json").read_text())
+          keys = [
+              "id",
+              "name",
+              "status",
+              "conclusion",
+              "html_url",
+              "head_sha",
+              "event",
+              "run_attempt",
+              "created_at",
+              "updated_at",
+              "run_started_at",
+              "display_title",
+          ]
+          for k in keys:
+              print(f"{k}: {run.get(k)}")
+          PY
+          echo "## jobs" >> ci-run-${RUN_ID}.txt
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs" --jq '.jobs[] | {id,name,status,conclusion,started_at,completed_at,steps:[.steps[]? | {name,status,conclusion,number}]}' >> ci-run-${RUN_ID}.txt || true
+          echo "## logs (failed first, then full)" >> ci-run-${RUN_ID}.txt
+          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed >> ci-run-${RUN_ID}.txt 2>&1 || true
+          echo "## full log tail" >> ci-run-${RUN_ID}.txt
+          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log >> ci-run-full.log 2>&1 || true
+          # Keep the committed dump bounded so the follow-up commit stays small.
+          if [ -f ci-run-full.log ]; then
+            tail -n 400 ci-run-full.log >> ci-run-${RUN_ID}.txt
+          fi
+
+      - name: Commit dump
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ci-run-35195353422.txt ci-run-35195353422.json
+          if git diff --cached --quiet; then
+            echo "No dump changes"
+            exit 0
+          fi
+          git commit -m "ci: store deploy run 35195353422 dump"
+          git push
