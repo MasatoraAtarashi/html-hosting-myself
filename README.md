@@ -72,7 +72,7 @@ pnpm exec wrangler secret put API_TOKEN
 - **Worker 名**: `html-hosting-myself`
 - **オブジェクトストレージ**: Cloudflare R2 バケット `html-hosting-myself`（binding `BUCKET`）。Deploy が GitHub secrets のアカウントに作成する
 - **メタデータ**: Cloudflare D1 `html-hosting-myself-db` + Drizzle ORM。UUID は Deploy が作成時に解決する
-- **認証**: Cloudflare Access ヘッダ、または `Authorization: Bearer <API_TOKEN>`。どちらも未設定の初回はダッシュボード書き込みを許可する
+- **認証**: Cloudflare Access ヘダ、または `Authorization: Bearer <API_TOKEN>`。どちらも未設定の初回はダッシュボード書き込みを許可する
 - **テスト**: vitest + @cloudflare/vitest-pool-workers
 - **Observability**: Workers Logs / Metrics が既定で ON
 
@@ -107,14 +107,14 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
   -F "ttl=7d"
 ```
 
-`API_TOKEN` が未設定のときは、Authorization ヘッダなしでも同じフォームを送れます。
+`API_TOKEN` が未設定のときは、Authorization ヘダなしでも同じフォームを送れます。
 
 | メソッド | パス               | 内容                                                             |
 | -------- | ------------------ | ---------------------------------------------------------------- |
 | `POST`   | `/api/upload`      | `file`（html/zip）と任意の `ttl`（`1d` / `7d` / `30d` / `keep`） |
 | `GET`    | `/api/hosts`       | ホスト一覧                                                       |
 | `PATCH`  | `/api/hosts/:slug` | `{ "ttl": "keep" }` などで期限を変更                             |
-| `DELETE`  | `/api/hosts/:slug` | 削除（R2 上のファイルも消す）                                    |
+| `DELETE` | `/api/hosts/:slug` | 削除（R2 上のファイルも消す）                                    |
 
 ## 主なコマンド
 
