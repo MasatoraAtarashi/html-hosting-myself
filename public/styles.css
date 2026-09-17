@@ -1,0 +1,286 @@
+/* lp-demo — ダッシュボード。配色は :root の変数だけ変えれば全体に反映されます */
+
+:root {
+  --color-bg: #f6f1e8;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-accent: #0f766e;
+  --color-accent-strong: #115e59;
+  --color-surface: #fffdf8;
+  --color-border: #e7e0d4;
+  --color-danger: #b91c1c;
+  --color-success: #166534;
+  --radius: 14px;
+  --max-width: 760px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Noto Sans JP", Meiryo, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.header-inner {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 16px 24px;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.header-note {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.hero {
+  padding: 40px 0 16px;
+}
+
+.hero h1 {
+  font-size: 1.7rem;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.lead {
+  color: var(--color-text-muted);
+}
+
+.upload-card,
+.list-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+}
+
+.upload-card h2,
+.list-card h2 {
+  font-size: 1.05rem;
+  margin-bottom: 16px;
+}
+
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 160px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  cursor: pointer;
+  padding: 24px;
+  text-align: center;
+}
+
+.dropzone.dragover {
+  border-color: var(--color-accent);
+  background: #ecfdf8;
+}
+
+.dropzone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.dropzone-title {
+  font-weight: 600;
+}
+
+.dropzone-sub,
+.file-name,
+.muted {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.ttl-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.ttl-label select {
+  min-width: 180px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  font: inherit;
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 18px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.button-primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.button-primary:hover {
+  background: var(--color-accent-strong);
+}
+
+.button-ghost {
+  background: transparent;
+  border-color: var(--color-border);
+}
+
+.button-danger {
+  color: var(--color-danger);
+  background: transparent;
+  border-color: transparent;
+}
+
+.form-message {
+  min-height: 1.4em;
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.form-message.success {
+  color: var(--color-success);
+}
+
+.form-message.error {
+  color: var(--color-danger);
+}
+
+.share-box {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.share-box label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.share-row {
+  display: flex;
+  gap: 8px;
+}
+
+.share-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  font: inherit;
+  background: #fff;
+}
+
+.host-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.host-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.host-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.host-meta {
+  flex: 1;
+  min-width: 200px;
+}
+
+.host-meta a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.host-meta a:hover {
+  text-decoration: underline;
+}
+
+.host-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.site-footer {
+  padding: 32px 0 48px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 1.4rem;
+  }
+
+  .share-row,
+  .upload-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
