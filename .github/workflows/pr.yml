@@ -30,10 +30,15 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-          cache: pnpm
+          # lockfile 未登録の初回 seed でも動くよう cache: pnpm は使わない
 
       - name: Install
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
 
       - name: Typecheck
         run: pnpm typecheck
@@ -67,7 +72,6 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-          cache: pnpm
 
       - name: zizmor (GitHub Actions audit)
         # オフラインでローカルファイルのみ監査（zizmor は npm に無いので cargo で導入）
@@ -76,7 +80,12 @@ jobs:
           "$HOME/.cargo/bin/zizmor" --min-severity low .github
 
       - name: Install deps for audit
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
 
       - name: pnpm audit
         run: pnpm audit --audit-level=high

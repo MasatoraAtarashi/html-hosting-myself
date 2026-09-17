@@ -32,8 +32,14 @@ jobs:
           node-version: 22
           # デプロイジョブは明示的にはキャッシュを使わない
 
+      # lockfile があれば固定、なければ package.json から解決する（初回 seed 用）
       - name: Install
-        run: pnpm install --frozen-lockfile
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi
 
       - name: Build
         run: pnpm build
