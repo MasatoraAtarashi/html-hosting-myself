@@ -1,0 +1,524 @@
+# run 35195353422
+## metadata
+id: 35195353422
+name: Deploy
+status: completed
+conclusion: failure
+html_url: https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35195353422
+head_sha: 04dafad813f9a58da2ffe64b5b887d15eafda338
+event: push
+run_attempt: 1
+created_at: 2026-09-17T07:36:09Z
+updated_at: 2026-09-17T07:36:59Z
+run_started_at: 2026-09-17T07:36:09Z
+display_title: fix: provision D1/R2 in the GitHub secrets Cloudflare account
+## jobs
+{"completed_at":"2026-09-17T07:36:58Z","conclusion":"failure","id":105117160471,"name":"Build \u0026 Deploy to Cloudflare Workers","started_at":"2026-09-17T07:36:11Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Checkout","number":2,"status":"completed"},{"conclusion":"success","name":"Setup pnpm","number":3,"status":"completed"},{"conclusion":"success","name":"Setup Node","number":4,"status":"completed"},{"conclusion":"success","name":"Install","number":5,"status":"completed"},{"conclusion":"success","name":"Build","number":6,"status":"completed"},{"conclusion":"success","name":"Require Cloudflare secrets","number":7,"status":"completed"},{"conclusion":"failure","name":"Provision D1 and R2","number":8,"status":"completed"},{"conclusion":"skipped","name":"Apply D1 migrations","number":9,"status":"completed"},{"conclusion":"skipped","name":"Deploy","number":10,"status":"completed"},{"conclusion":"skipped","name":"Post Setup Node","number":18,"status":"completed"},{"conclusion":"success","name":"Post Setup pnpm","number":19,"status":"completed"},{"conclusion":"success","name":"Post Checkout","number":20,"status":"completed"},{"conclusion":"success","name":"Complete job","number":21,"status":"completed"}]}
+## logs (failed first, then full)
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	﻿2026-09-17T07:36:48.2049813Z ##[group]Run set +e
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2050109Z ^[[36;1mset +e^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2050339Z ^[[36;1mpnpm exec wrangler whoami^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2050683Z ^[[36;1mecho "Ensuring D1 html-hosting-myself-db exists..."^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2051096Z ^[[36;1mpnpm exec wrangler d1 create html-hosting-myself-db^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2051482Z ^[[36;1mecho "Ensuring R2 html-hosting-myself exists..."^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2051889Z ^[[36;1mpnpm exec wrangler r2 bucket create html-hosting-myself^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2052228Z ^[[36;1mset -e^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2052509Z ^[[36;1mpnpm exec wrangler d1 list --json > /tmp/d1-list.json^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2052854Z ^[[36;1mpython3 <<'PY'^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2053106Z ^[[36;1mfrom pathlib import Path^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2053377Z ^[[36;1mimport json^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2053635Z ^[[36;1mraw = Path("/tmp/d1-list.json").read_text()^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2054053Z ^[[36;1mstart_candidates = [i for i in (raw.find("["), raw.find("{")) if i >= 0]^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2054484Z ^[[36;1mif not start_candidates:^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2054864Z ^[[36;1m    raise SystemExit(f"wrangler d1 list --json が JSON を返しませんでした:\n{raw}")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2055310Z ^[[36;1mdata = json.loads(raw[min(start_candidates):])^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2055645Z ^[[36;1mif isinstance(data, dict):^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2055983Z ^[[36;1m    data = data.get("result") or data.get("databases") or []^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2056455Z ^[[36;1mdb = next((x for x in data if x.get("name") == "html-hosting-myself-db"), None)^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2056852Z ^[[36;1mif not db:^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2057093Z ^[[36;1m    names = [x.get("name") for x in data]^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2057766Z ^[[36;1m    raise SystemExit(^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2058081Z ^[[36;1m        "D1 html-hosting-myself-db を作成できませんでした。"^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2058491Z ^[[36;1m        "CLOUDFLARE_ACCOUNT_ID がトークンのアカウントと不一致か、トークンに D1:Edit がありません。"^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2058871Z ^[[36;1m        f" list={names}"^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059118Z ^[[36;1m    )^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059344Z ^[[36;1muid = db.get("uuid") or db.get("id")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059643Z ^[[36;1mpath = Path("wrangler.jsonc")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059923Z ^[[36;1mtext = path.read_text()^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2060244Z ^[[36;1mneedle = '"database_name": "html-hosting-myself-db",'^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2060650Z ^[[36;1mif '"database_id"' not in text.split(needle, 1)[-1][:180]:^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2060994Z ^[[36;1m    text = text.replace(^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2061243Z ^[[36;1m        needle,^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2061509Z ^[[36;1m        needle + f'\n      "database_id": "{uid}",',^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2061804Z ^[[36;1m        1,^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062005Z ^[[36;1m    )^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062219Z ^[[36;1m    path.write_text(text)^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062544Z ^[[36;1mprint(f"Using D1 html-hosting-myself-db id={uid}")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062864Z ^[[36;1mPY^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2095200Z shell: /usr/bin/bash -e {0}
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2095467Z env:
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2095718Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2096245Z   CLOUDFLARE_API_TOKEN: ***
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2096560Z   CLOUDFLARE_ACCOUNT_ID: ***
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2096797Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5570291Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5571385Z  ⛅️ wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5572502Z ────────────────────
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5740782Z Getting User settings...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0370345Z 👋 You are logged in with an Account API Token, associated with the account Atarashi.masatora@gmail.com's Account.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0372718Z ℹ️  The API Token is read from the CLOUDFLARE_API_TOKEN environment variable.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0448527Z ┌───────────────────────────────────────┬──────────────────────────────────┐
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0450110Z │ Account Name                          │ Account ID                       │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0451156Z ├───────────────────────────────────────┼──────────────────────────────────┤
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0452859Z │ Atarashi.masatora@gmail.com's Account │ *** │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0453443Z └───────────────────────────────────────┴──────────────────────────────────┘
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0454269Z 🔓 To see token permissions visit https://dash.cloudflare.com/***/api-tokens
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.1281263Z Ensuring D1 html-hosting-myself-db exists...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.3768016Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.3769138Z  ⛅️ wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.3770126Z ────────────────────
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6065840Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6770004Z ^[[31m✘ ^[[41;31m[^[[41;97mERROR^[[41;31m]^[[0m ^[[1mA request to the Cloudflare API (/accounts/***/d1/database) failed.^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6771800Z 📎 It looks like you are authenticating Wrangler via a custom API token set in an environment variable.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6788030Z Please ensure it has the correct permissions for this operation.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6788593Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6788857Z   Authentication error [code: 10000]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789189Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789242Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789255Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789451Z Getting User settings...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.0982769Z 👋 You are logged in with an Account API Token, associated with the account Atarashi.masatora@gmail.com's Account.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.0984687Z ℹ️  The API Token is read from the CLOUDFLARE_API_TOKEN environment variable.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1027105Z ┌───────────────────────────────────────┬──────────────────────────────────┐
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1028792Z │ Account Name                          │ Account ID                       │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1030497Z ├───────────────────────────────────────┼──────────────────────────────────┤
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1032155Z │ Atarashi.masatora@gmail.com's Account │ *** │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1033610Z └───────────────────────────────────────┴──────────────────────────────────┘
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1035552Z 🔓 To see token permissions visit https://dash.cloudflare.com/***/api-tokens
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.2233996Z 🎢 Unable to get membership roles. Make sure you have permissions to read the account. Are you missing the `User->Memberships->Read` permission?
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.2258795Z 🪵  Logs were written to "/home/runner/.config/.wrangler/logs/wrangler-2026-09-17_07-36-51_103.log"
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.2541523Z Ensuring R2 html-hosting-myself exists...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5063013Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5064165Z  ⛅️ wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5065185Z ────────────────────
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5385548Z Creating bucket 'html-hosting-myself'...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3368637Z ✅ Created bucket 'html-hosting-myself' with default storage class of Standard.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3388552Z To access your new R2 Bucket in your Worker, add the following snippet to your configuration file:
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3389814Z {
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3407890Z   "r2_buckets": [
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3427859Z     {
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3445558Z       "bucket_name": "html-hosting-myself",
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3468073Z       "binding": "html_hosting_myself"
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3468849Z     }
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3487895Z   ]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3507786Z }
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3518188Z ? Would you like Wrangler to add it on your behalf?
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3519318Z 🤖 Using fallback value in non-interactive context: no
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9270402Z ^[[31m✘ ^[[41;31m[^[[41;97mERROR^[[41;31m]^[[0m ^[[1mA request to the Cloudflare API (/accounts/***/d1/database) failed.^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9287619Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9308012Z   Authentication error [code: 10000]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9334397Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9340136Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:56.4318583Z 🪵  Logs were written to "/home/runner/.config/.wrangler/logs/wrangler-2026-09-17_07-36-55_385.log"
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:56.4629519Z ##[error]Process completed with exit code 1.
+## full log tail
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8085268Z ##[group]Runner Image Provisioner
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8086823Z Hosted Compute Agent
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8088348Z Version: 20260828.587
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8090295Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8091686Z Build Date: 2026-08-28T16:44:25Z
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8092898Z Worker ID: {8fe598f4-1b33-49cd-9fbd-e56118211d58}
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8094467Z Azure Region: centralus
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8095533Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8099073Z ##[group]Operating System
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8100204Z Ubuntu
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8101326Z 24.04.5
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8102286Z LTS
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8103190Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8104332Z ##[group]Runner Image
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8105425Z Image: ubuntu-24.04
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8106646Z Version: 20260907.300.1
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8109007Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8112350Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8114146Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8116389Z ##[group]GITHUB_TOKEN Permissions
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8119829Z Contents: read
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8121098Z Metadata: read
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8122183Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8125680Z Secret source: Actions
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8127828Z Cache mode: write
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.8129450Z Prepare workflow directory
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.9032390Z Prepare all required actions
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:12.9186294Z Getting action download info
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:13.2674789Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:13.3865764Z Download action repository 'pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1' (SHA:b906affcce14559ad1aafd4ab0e942779e9f58b1)
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:13.8759236Z Download action repository 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:13.9863521Z Download action repository 'cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0' (SHA:ebbaa1584979971c8614a24965b4405ff95890e0)
+Build & Deploy to Cloudflare Workers	Set up job	2026-09-17T07:36:14.4112829Z Complete job name: Build & Deploy to Cloudflare Workers
+Build & Deploy to Cloudflare Workers	Checkout	﻿2026-09-17T07:36:14.5218355Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5234371Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5237677Z with:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5239286Z   persist-credentials: false
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5241358Z   repository: MasatoraAtarashi/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5258095Z   token: ***
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5259118Z   ssh-strict: true
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5260056Z   ssh-user: git
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5260969Z   clean: true
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5261940Z   sparse-checkout-cone-mode: true
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5263057Z   fetch-depth: 1
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5263987Z   fetch-tags: false
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5264943Z   show-progress: true
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5265916Z   lfs: false
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5266849Z   submodules: false
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5268373Z   set-safe-directory: true
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5270377Z   allow-unsafe-pr-checkout: false
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.5273298Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7835934Z Syncing repository: MasatoraAtarashi/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7841040Z ##[group]Getting Git version info
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7843855Z Working directory is '/home/runner/work/html-hosting-myself/html-hosting-myself'
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7848303Z [command]/usr/bin/git version
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7850125Z git version 2.55.0
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7855749Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7865076Z Temporarily overriding HOME='/home/runner/work/_temp/bdaff153-e3c3-42cf-ba5f-1a28b035491d' before making global git config changes
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7870938Z Adding repository directory to the temporary git global config as a safe directory
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7875488Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/html-hosting-myself/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7882638Z Deleting the contents of '/home/runner/work/html-hosting-myself/html-hosting-myself'
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7886953Z ##[group]Initializing the repository
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7890096Z [command]/usr/bin/git init /home/runner/work/html-hosting-myself/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7893781Z hint: Using 'master' as the name for the initial branch. This default branch name
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7897464Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7901005Z hint: to use in all of your new repositories, which will suppress this warning,
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7903864Z hint: call:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7905332Z hint:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7907102Z hint: 	git config --global init.defaultBranch <name>
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7909629Z hint:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7911741Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7915099Z hint: 'development'. The just-created branch can be renamed via this command:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7918282Z hint:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7919847Z hint: 	git branch -m <name>
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7921711Z hint:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7924007Z hint: Disable this message with "git config set advice.defaultBranchName false"
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7928315Z Initialized empty Git repository in /home/runner/work/html-hosting-myself/html-hosting-myself/.git/
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7934923Z [command]/usr/bin/git remote add origin https://github.com/MasatoraAtarashi/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7941534Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7944259Z ##[group]Disabling automatic garbage collection
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7946787Z [command]/usr/bin/git config --local gc.auto 0
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7952248Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7954839Z ##[group]Setting up auth
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7957675Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7965571Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7974282Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.7988468Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.8182137Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.8199652Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.8351081Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.8478089Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.8481508Z ##[group]Fetching the repository
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:14.8485519Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +04dafad813f9a58da2ffe64b5b887d15eafda338:refs/remotes/origin/main
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3811545Z From https://github.com/MasatoraAtarashi/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3820049Z  * [new ref]         04dafad813f9a58da2ffe64b5b887d15eafda338 -> origin/main
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3824496Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3825949Z ##[group]Determining the checkout info
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3828191Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3829344Z [command]/usr/bin/git sparse-checkout disable
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3833163Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3839798Z ##[group]Checking out the ref
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3844421Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3845362Z Switched to a new branch 'main'
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3845974Z branch 'main' set up to track 'origin/main'.
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3848323Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3849756Z [command]/usr/bin/git log -1 --format=%H
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3850475Z 04dafad813f9a58da2ffe64b5b887d15eafda338
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3852513Z ##[group]Removing auth
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3853342Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3855778Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3861098Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3892882Z http.https://github.com/.extraheader
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3901135Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.3939470Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.4219216Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.4232883Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Build & Deploy to Cloudflare Workers	Checkout	2026-09-17T07:36:15.4502932Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Setup pnpm	﻿2026-09-17T07:36:15.4718241Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4720435Z ##[group]Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4720890Z with:
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4721141Z   dest: ~/setup-pnpm
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4721409Z   run_install: null
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4721664Z   cache: false
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4721949Z   cache_dependency_path: pnpm-lock.yaml
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4722298Z   package_json_file: package.json
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4722624Z   standalone: false
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.4722893Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:15.6588756Z ##[group]Running self-installer...
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:16.2024693Z (node:2164) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:16.2045424Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:16.4433718Z Progress: resolved 1, reused 0, downloaded 0, added 0
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:16.4726939Z Packages: +1
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:16.4748018Z +
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0198549Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0488288Z 
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0488999Z dependencies:
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0489771Z + pnpm 10.30.2 (12.4.2 is available)
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0490759Z 
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0525237Z Done in 1.1s
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0682281Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Setup pnpm	2026-09-17T07:36:17.0683226Z Installation Completed!
+Build & Deploy to Cloudflare Workers	Setup Node	﻿2026-09-17T07:36:17.0893787Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0895192Z ##[group]Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0895565Z with:
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0895929Z   node-version: 22
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0896185Z   always-auth: false
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0896424Z   check-latest: false
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0899253Z   token: ***
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0899480Z env:
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0899746Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.0900059Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.2417561Z Found in cache @ /opt/hostedtoolcache/node/22.23.2/x64
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.2420351Z (node:2178) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.2424204Z ##[group]Environment details
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:17.2433161Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:20.6797998Z node: v22.23.2
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:20.6809298Z npm: 10.9.8
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:20.6809767Z yarn: 1.22.22
+Build & Deploy to Cloudflare Workers	Setup Node	2026-09-17T07:36:20.6810583Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Install	﻿2026-09-17T07:36:20.6940344Z ##[group]Run if [ -f pnpm-lock.yaml ]; then
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6940793Z ^[[36;1mif [ -f pnpm-lock.yaml ]; then^[[0m
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6941140Z ^[[36;1m  pnpm install --frozen-lockfile^[[0m
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6941462Z ^[[36;1melse^[[0m
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6941679Z ^[[36;1m  pnpm install^[[0m
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6941906Z ^[[36;1mfi^[[0m
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6987589Z shell: /usr/bin/bash -e {0}
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6987877Z env:
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6988148Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:20.6988482Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:21.6953865Z Progress: resolved 1, reused 0, downloaded 0, added 0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:22.7488975Z Progress: resolved 18, reused 0, downloaded 11, added 0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:23.7501252Z Progress: resolved 117, reused 0, downloaded 29, added 0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:24.7869247Z Progress: resolved 237, reused 0, downloaded 98, added 0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:25.7868108Z Progress: resolved 364, reused 0, downloaded 168, added 0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:26.7699538Z  WARN  3 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, git-raw-commits@4.0.0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:26.7764769Z Packages: +203
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:26.7778485Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:26.7872755Z Progress: resolved 366, reused 0, downloaded 193, added 0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.7534294Z Progress: resolved 366, reused 0, downloaded 205, added 203, done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.8217349Z .../esbuild@0.28.1/node_modules/esbuild postinstall$ node install.js
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.8235408Z .../esbuild@0.25.12/node_modules/esbuild postinstall$ node install.js
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.8243337Z .../esbuild@0.18.20/node_modules/esbuild postinstall$ node install.js
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.8254484Z .../node_modules/lefthook postinstall$ node postinstall.js
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.8265654Z .../esbuild@0.28.2/node_modules/esbuild postinstall$ node install.js
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.9708656Z .../node_modules/lefthook postinstall: Done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:27.9909503Z .../esbuild@0.28.1/node_modules/esbuild postinstall: Done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:28.0113623Z .../esbuild@0.25.12/node_modules/esbuild postinstall: Done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:28.0188340Z .../node_modules/workerd postinstall$ node install.js
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:28.0430661Z .../esbuild@0.18.20/node_modules/esbuild postinstall: Done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:28.0731731Z .../node_modules/workerd postinstall$ node install.js
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:28.0745704Z .../esbuild@0.28.2/node_modules/esbuild postinstall: Done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:28.1944465Z .../node_modules/workerd postinstall: Done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:28.4538446Z .../node_modules/workerd postinstall: Done
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8027081Z 
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8028043Z dependencies:
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8029318Z + @hono/zod-validator 0.9.1
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8038180Z + drizzle-orm 0.45.2
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8038831Z + fflate 0.8.3
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8039457Z + hono 4.13.8
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8039994Z + zod 4.6.5
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8040351Z 
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8040744Z devDependencies:
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8041649Z + @cloudflare/vitest-pool-workers 0.21.3 (0.22.0 is available)
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8042940Z + @commitlint/cli 19.8.1 (21.2.2 is available)
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8043884Z + @commitlint/config-conventional 19.8.1 (21.2.2 is available)
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8044711Z + @types/node 24.13.5
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8045333Z + drizzle-kit 0.31.10
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8045913Z + lefthook 2.1.14
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8046445Z + prettier 3.9.7
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8047086Z + typescript 5.9.3 (7.0.2 is available)
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8048410Z + vite 7.3.6 (8.3.0 is available)
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8049151Z + vitest 4.1.11 (5.0.1 is available)
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8049798Z + wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8050265Z 
+Build & Deploy to Cloudflare Workers	Install	2026-09-17T07:36:40.8115124Z Done in 20s using pnpm v10.30.2
+Build & Deploy to Cloudflare Workers	Build	﻿2026-09-17T07:36:40.8586255Z ##[group]Run pnpm build
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:40.8586575Z ^[[36;1mpnpm build^[[0m
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:40.8623072Z shell: /usr/bin/bash -e {0}
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:40.8623327Z env:
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:40.8623584Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:40.8623905Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.1813117Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.1814608Z > html-hosting-myself@ build /home/runner/work/html-hosting-myself/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.1815946Z > pnpm cf-typegen && tsc --noEmit
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.1816557Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.4893897Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.4895070Z > html-hosting-myself@ cf-typegen /home/runner/work/html-hosting-myself/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.4896555Z > wrangler types
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:41.4897091Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.5903895Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.5905180Z  ⛅️ wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.5906223Z ────────────────────
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6318351Z Generating project types...
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6319139Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6395502Z interface __BaseEnv_Env {
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6396789Z 	BUCKET: R2Bucket;
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6403674Z 	DB: D1Database;
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6404408Z }
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6405161Z declare namespace Cloudflare {
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6405914Z 	interface GlobalProps {
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6406710Z 		mainModule: typeof import("./workers/app");
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6407880Z 	}
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6408591Z 	interface Env extends __BaseEnv_Env {}
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6409441Z }
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6410745Z interface Env extends __BaseEnv_Env {}
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6411631Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6412162Z Generating runtime types...
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:42.6412669Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3389336Z Runtime types generated.
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3389950Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3396728Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3411031Z ✨ Types written to worker-configuration.d.ts
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3411690Z 
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3418501Z 📖 Read about runtime types
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3419766Z https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3421560Z 📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+Build & Deploy to Cloudflare Workers	Build	2026-09-17T07:36:44.3422447Z 
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	﻿2026-09-17T07:36:48.1920441Z ##[group]Run missing=0
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1920753Z ^[[36;1mmissing=0^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1921017Z ^[[36;1mif [ -z "$CLOUDFLARE_API_TOKEN" ]; then^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1922060Z ^[[36;1m  echo "::error::GitHub Actions secret CLOUDFLARE_API_TOKEN が空です。Settings → Secrets and variables → Actions に設定し、Deploy を Re-run してください（権限: Workers Scripts:Edit / D1:Edit / Workers R2 Storage:Edit）。デプロイ先 Worker 名は html-hosting-myself です。"^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1923007Z ^[[36;1m  missing=1^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1923220Z ^[[36;1mfi^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1923450Z ^[[36;1mif [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1924080Z ^[[36;1m  echo "::error::GitHub Actions secret CLOUDFLARE_ACCOUNT_ID が空です。Settings → Secrets and variables → Actions に設定し、Deploy を Re-run してください。"^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1924669Z ^[[36;1m  missing=1^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1924876Z ^[[36;1mfi^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1925077Z ^[[36;1mif [ "$missing" -ne 0 ]; then^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1925338Z ^[[36;1m  exit 1^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1925573Z ^[[36;1mfi^[[0m
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1962036Z shell: /usr/bin/bash -e {0}
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1962290Z env:
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1962730Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1963299Z   CLOUDFLARE_API_TOKEN: ***
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1963607Z   CLOUDFLARE_ACCOUNT_ID: ***
+Build & Deploy to Cloudflare Workers	Require Cloudflare secrets	2026-09-17T07:36:48.1963844Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	﻿2026-09-17T07:36:48.2049813Z ##[group]Run set +e
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2050109Z ^[[36;1mset +e^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2050339Z ^[[36;1mpnpm exec wrangler whoami^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2050683Z ^[[36;1mecho "Ensuring D1 html-hosting-myself-db exists..."^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2051096Z ^[[36;1mpnpm exec wrangler d1 create html-hosting-myself-db^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2051482Z ^[[36;1mecho "Ensuring R2 html-hosting-myself exists..."^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2051889Z ^[[36;1mpnpm exec wrangler r2 bucket create html-hosting-myself^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2052228Z ^[[36;1mset -e^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2052509Z ^[[36;1mpnpm exec wrangler d1 list --json > /tmp/d1-list.json^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2052854Z ^[[36;1mpython3 <<'PY'^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2053106Z ^[[36;1mfrom pathlib import Path^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2053377Z ^[[36;1mimport json^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2053635Z ^[[36;1mraw = Path("/tmp/d1-list.json").read_text()^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2054053Z ^[[36;1mstart_candidates = [i for i in (raw.find("["), raw.find("{")) if i >= 0]^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2054484Z ^[[36;1mif not start_candidates:^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2054864Z ^[[36;1m    raise SystemExit(f"wrangler d1 list --json が JSON を返しませんでした:\n{raw}")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2055310Z ^[[36;1mdata = json.loads(raw[min(start_candidates):])^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2055645Z ^[[36;1mif isinstance(data, dict):^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2055983Z ^[[36;1m    data = data.get("result") or data.get("databases") or []^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2056455Z ^[[36;1mdb = next((x for x in data if x.get("name") == "html-hosting-myself-db"), None)^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2056852Z ^[[36;1mif not db:^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2057093Z ^[[36;1m    names = [x.get("name") for x in data]^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2057766Z ^[[36;1m    raise SystemExit(^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2058081Z ^[[36;1m        "D1 html-hosting-myself-db を作成できませんでした。"^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2058491Z ^[[36;1m        "CLOUDFLARE_ACCOUNT_ID がトークンのアカウントと不一致か、トークンに D1:Edit がありません。"^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2058871Z ^[[36;1m        f" list={names}"^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059118Z ^[[36;1m    )^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059344Z ^[[36;1muid = db.get("uuid") or db.get("id")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059643Z ^[[36;1mpath = Path("wrangler.jsonc")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2059923Z ^[[36;1mtext = path.read_text()^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2060244Z ^[[36;1mneedle = '"database_name": "html-hosting-myself-db",'^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2060650Z ^[[36;1mif '"database_id"' not in text.split(needle, 1)[-1][:180]:^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2060994Z ^[[36;1m    text = text.replace(^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2061243Z ^[[36;1m        needle,^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2061509Z ^[[36;1m        needle + f'\n      "database_id": "{uid}",',^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2061804Z ^[[36;1m        1,^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062005Z ^[[36;1m    )^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062219Z ^[[36;1m    path.write_text(text)^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062544Z ^[[36;1mprint(f"Using D1 html-hosting-myself-db id={uid}")^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2062864Z ^[[36;1mPY^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2095200Z shell: /usr/bin/bash -e {0}
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2095467Z env:
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2095718Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2096245Z   CLOUDFLARE_API_TOKEN: ***
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2096560Z   CLOUDFLARE_ACCOUNT_ID: ***
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:48.2096797Z ##[endgroup]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5570291Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5571385Z  ⛅️ wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5572502Z ────────────────────
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:49.5740782Z Getting User settings...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0370345Z 👋 You are logged in with an Account API Token, associated with the account Atarashi.masatora@gmail.com's Account.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0372718Z ℹ️  The API Token is read from the CLOUDFLARE_API_TOKEN environment variable.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0448527Z ┌───────────────────────────────────────┬──────────────────────────────────┐
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0450110Z │ Account Name                          │ Account ID                       │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0451156Z ├───────────────────────────────────────┼──────────────────────────────────┤
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0452859Z │ Atarashi.masatora@gmail.com's Account │ *** │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0453443Z └───────────────────────────────────────┴──────────────────────────────────┘
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.0454269Z 🔓 To see token permissions visit https://dash.cloudflare.com/***/api-tokens
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:50.1281263Z Ensuring D1 html-hosting-myself-db exists...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.3768016Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.3769138Z  ⛅️ wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.3770126Z ────────────────────
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6065840Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6770004Z ^[[31m✘ ^[[41;31m[^[[41;97mERROR^[[41;31m]^[[0m ^[[1mA request to the Cloudflare API (/accounts/***/d1/database) failed.^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6771800Z 📎 It looks like you are authenticating Wrangler via a custom API token set in an environment variable.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6788030Z Please ensure it has the correct permissions for this operation.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6788593Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6788857Z   Authentication error [code: 10000]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789189Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789242Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789255Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:51.6789451Z Getting User settings...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.0982769Z 👋 You are logged in with an Account API Token, associated with the account Atarashi.masatora@gmail.com's Account.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.0984687Z ℹ️  The API Token is read from the CLOUDFLARE_API_TOKEN environment variable.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1027105Z ┌───────────────────────────────────────┬──────────────────────────────────┐
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1028792Z │ Account Name                          │ Account ID                       │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1030497Z ├───────────────────────────────────────┼──────────────────────────────────┤
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1032155Z │ Atarashi.masatora@gmail.com's Account │ *** │
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1033610Z └───────────────────────────────────────┴──────────────────────────────────┘
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.1035552Z 🔓 To see token permissions visit https://dash.cloudflare.com/***/api-tokens
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.2233996Z 🎢 Unable to get membership roles. Make sure you have permissions to read the account. Are you missing the `User->Memberships->Read` permission?
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.2258795Z 🪵  Logs were written to "/home/runner/.config/.wrangler/logs/wrangler-2026-09-17_07-36-51_103.log"
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:52.2541523Z Ensuring R2 html-hosting-myself exists...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5063013Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5064165Z  ⛅️ wrangler 4.133.0
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5065185Z ────────────────────
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:53.5385548Z Creating bucket 'html-hosting-myself'...
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3368637Z ✅ Created bucket 'html-hosting-myself' with default storage class of Standard.
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3388552Z To access your new R2 Bucket in your Worker, add the following snippet to your configuration file:
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3389814Z {
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3407890Z   "r2_buckets": [
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3427859Z     {
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3445558Z       "bucket_name": "html-hosting-myself",
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3468073Z       "binding": "html_hosting_myself"
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3468849Z     }
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3487895Z   ]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3507786Z }
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3518188Z ? Would you like Wrangler to add it on your behalf?
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:54.3519318Z 🤖 Using fallback value in non-interactive context: no
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9270402Z ^[[31m✘ ^[[41;31m[^[[41;97mERROR^[[41;31m]^[[0m ^[[1mA request to the Cloudflare API (/accounts/***/d1/database) failed.^[[0m
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9287619Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9308012Z   Authentication error [code: 10000]
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9334397Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:55.9340136Z 
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:56.4318583Z 🪵  Logs were written to "/home/runner/.config/.wrangler/logs/wrangler-2026-09-17_07-36-55_385.log"
+Build & Deploy to Cloudflare Workers	Provision D1 and R2	2026-09-17T07:36:56.4629519Z ##[error]Process completed with exit code 1.
+Build & Deploy to Cloudflare Workers	Post Setup pnpm	﻿2026-09-17T07:36:56.4730570Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Build & Deploy to Cloudflare Workers	Post Setup pnpm	2026-09-17T07:36:56.4731861Z Post job cleanup.
+Build & Deploy to Cloudflare Workers	Post Setup pnpm	2026-09-17T07:36:56.6284149Z Pruning is unnecessary.
+Build & Deploy to Cloudflare Workers	Post Checkout	﻿2026-09-17T07:36:56.6510531Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.6512722Z Post job cleanup.
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.7988841Z [command]/usr/bin/git version
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8067875Z git version 2.55.0
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8168640Z Temporarily overriding HOME='/home/runner/work/_temp/f5419b17-9b0f-40cf-990e-13dec655d6d7' before making global git config changes
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8200565Z Adding repository directory to the temporary git global config as a safe directory
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8218698Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/html-hosting-myself/html-hosting-myself
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8245593Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8302605Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8566398Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8653253Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8942486Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Build & Deploy to Cloudflare Workers	Post Checkout	2026-09-17T07:36:56.8994994Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Build & Deploy to Cloudflare Workers	Complete job	﻿2026-09-17T07:36:56.9541495Z Cleaning up orphan processes
+Build & Deploy to Cloudflare Workers	Complete job	2026-09-17T07:36:56.9928810Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020, pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
