@@ -1,0 +1,14 @@
+{
+  "commandAllowlist": [
+    "git branch",
+    "git diff",
+    "git log",
+    "git status",
+    "pnpm run *",
+    "pnpm test",
+    "pnpm typecheck"
+  ],
+  "commandDenylist": [
+    "rm -rf *"
+  ]
+}
