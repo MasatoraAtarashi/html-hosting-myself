@@ -1,0 +1,9 @@
+# ローカル開発用の環境変数（このファイルはコミットされない）
+# エージェント / CI からのアップロード用トークン（任意）
+# 設定すると書き込み API は Authorization: Bearer が必須になる。
+# 未設定（preview の初回など）ではダッシュボードからのアップロードを許可する。
+# 本番では `wrangler secret put API_TOKEN` で設定する。ここに実値を書かないこと
+# API_TOKEN=
+
+# Cloudflare Access を後から足した場合のローカル代替（任意）
+# LOCAL_DEV_USER_EMAIL=you@example.com
