@@ -17,26 +17,27 @@ concurrency:
 
 jobs:
   fetch:
-    name: Dump run 35195353422
+    name: Dump latest Deploy run on main
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Fetch workflow run metadata and logs
+      - name: Fetch latest Deploy metadata and logs
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_ID: "35195353422"
         run: |
           set -euo pipefail
-          echo "# run $RUN_ID" > ci-run-${RUN_ID}.txt
-          echo "## metadata" >> ci-run-${RUN_ID}.txt
-          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" > ci-run-${RUN_ID}.json
-          python3 - <<'PY' >> ci-run-${RUN_ID}.txt
+          RUN_ID=$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/deploy.yml/runs?branch=main&per_page=1" --jq '.workflow_runs[0].id')
+          echo "Dumping run $RUN_ID"
+          echo "# run $RUN_ID" > ci-run-latest.txt
+          echo "## metadata" >> ci-run-latest.txt
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" > ci-run-latest.json
+          python3 - <<'PY' >> ci-run-latest.txt
           import json
           from pathlib import Path
-          run = json.loads(Path("ci-run-35195353422.json").read_text())
+          run = json.loads(Path("ci-run-latest.json").read_text())
           keys = [
               "id",
               "name",
@@ -54,26 +55,22 @@ jobs:
           for k in keys:
               print(f"{k}: {run.get(k)}")
           PY
-          echo "## jobs" >> ci-run-${RUN_ID}.txt
-          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs" --jq '.jobs[] | {id,name,status,conclusion,started_at,completed_at,steps:[.steps[]? | {name,status,conclusion,number}]}' >> ci-run-${RUN_ID}.txt || true
-          echo "## logs (failed first, then full)" >> ci-run-${RUN_ID}.txt
-          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed >> ci-run-${RUN_ID}.txt 2>&1 || true
-          echo "## full log tail" >> ci-run-${RUN_ID}.txt
-          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log >> ci-run-full.log 2>&1 || true
-          # Keep the committed dump bounded so the follow-up commit stays small.
-          if [ -f ci-run-full.log ]; then
-            tail -n 400 ci-run-full.log >> ci-run-${RUN_ID}.txt
-          fi
+          echo "## jobs" >> ci-run-latest.txt
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs" --jq '.jobs[] | {id,name,status,conclusion,started_at,completed_at,steps:[.steps[]? | {name,status,conclusion,number}]}' >> ci-run-latest.txt || true
+          echo "## logs (failed first)" >> ci-run-latest.txt
+          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log-failed >> ci-run-latest.txt 2>&1 || true
+          echo "## deploy log tail" >> ci-run-latest.txt
+          gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log 2>/dev/null | rg -i "Deploy|workers.dev|Success|Published|Error|error|html-hosting-myself" | tail -n 80 >> ci-run-latest.txt || true
 
       - name: Commit dump
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ci-run-35195353422.txt ci-run-35195353422.json
+          git add ci-run-latest.txt ci-run-latest.json
           if git diff --cached --quiet; then
             echo "No dump changes"
             exit 0
           fi
-          git commit -m "ci: store deploy run 35195353422 dump"
+          git commit -m "ci: store latest Deploy run dump"
           git push
