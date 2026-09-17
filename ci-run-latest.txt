@@ -1,18 +1,218 @@
-# run 35196308141
-## metadata
-id: 35196308141
-name: Deploy
-status: completed
-conclusion: success
-html_url: https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35196308141
-head_sha: bb24b7fd19237a85ebc578e06722bbc4d01c97d2
-event: push
-run_attempt: 1
-created_at: 2026-09-17T07:47:31Z
-updated_at: 2026-09-17T07:48:23Z
-run_started_at: 2026-09-17T07:47:31Z
-display_title: fix: skip CI D1 create (token 10000) and deploy with provisioned data…
-## jobs
-{"completed_at":"2026-09-17T07:48:22Z","conclusion":"success","id":105120259486,"name":"Build \u0026 Deploy to Cloudflare Workers","started_at":"2026-09-17T07:47:33Z","status":"completed","steps":[{"conclusion":"success","name":"Set up job","number":1,"status":"completed"},{"conclusion":"success","name":"Checkout","number":2,"status":"completed"},{"conclusion":"success","name":"Setup pnpm","number":3,"status":"completed"},{"conclusion":"success","name":"Setup Node","number":4,"status":"completed"},{"conclusion":"success","name":"Install","number":5,"status":"completed"},{"conclusion":"success","name":"Build","number":6,"status":"completed"},{"conclusion":"success","name":"Require Cloudflare secrets","number":7,"status":"completed"},{"conclusion":"success","name":"Ensure R2 bucket","number":8,"status":"completed"},{"conclusion":"success","name":"Deploy","number":9,"status":"completed"},{"conclusion":"success","name":"Post Setup Node","number":16,"status":"completed"},{"conclusion":"success","name":"Post Setup pnpm","number":17,"status":"completed"},{"conclusion":"success","name":"Post Checkout","number":18,"status":"completed"},{"conclusion":"success","name":"Complete job","number":19,"status":"completed"}]}
-## logs (failed first)
-## deploy log tail
+# latest runs on main
+## deploy.yml
+{"conclusion":"success","created_at":"2026-09-17T07:47:31Z","display_title":"fix: skip CI D1 create (token 10000) and deploy with provisioned data…","head_sha":"bb24b7fd19237a85ebc578e06722bbc4d01c97d2","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35196308141","id":35196308141,"name":"Deploy","status":"completed"}
+{"conclusion":"failure","created_at":"2026-09-17T07:36:09Z","display_title":"fix: provision D1/R2 in the GitHub secrets Cloudflare account","head_sha":"04dafad813f9a58da2ffe64b5b887d15eafda338","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35195353422","id":35195353422,"name":"Deploy","status":"completed"}
+{"conclusion":"failure","created_at":"2026-09-17T07:30:02Z","display_title":"chore: remove truncated pnpm-lock.yaml","head_sha":"6f367c039cb4802b495fcc77fe0628960502d84d","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35194827374","id":35194827374,"name":"Deploy","status":"completed"}
+## pr.yml
+{"conclusion":"failure","created_at":"2026-09-17T07:47:31Z","display_title":"fix: skip CI D1 create (token 10000) and deploy with provisioned data…","head_sha":"bb24b7fd19237a85ebc578e06722bbc4d01c97d2","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35196308117","id":35196308117,"name":"PR Checks","status":"completed"}
+{"conclusion":"failure","created_at":"2026-09-17T07:36:09Z","display_title":"fix: provision D1/R2 in the GitHub secrets Cloudflare account","head_sha":"04dafad813f9a58da2ffe64b5b887d15eafda338","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35195353434","id":35195353434,"name":"PR Checks","status":"completed"}
+{"conclusion":"cancelled","created_at":"2026-09-17T07:30:02Z","display_title":"chore: remove truncated pnpm-lock.yaml","head_sha":"6f367c039cb4802b495fcc77fe0628960502d84d","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35194827218","id":35194827218,"name":"PR Checks","status":"completed"}
+## jobs for latest pr.yml
+pr run 35196308117
+{"completed_at":"2026-09-17T07:48:10Z","conclusion":"failure","id":105120259246,"name":"Typecheck / Lint / Test","started_at":"2026-09-17T07:47:34Z","status":"completed"}
+{"completed_at":"2026-09-17T07:55:21Z","conclusion":"success","id":105120259480,"name":"gitleaks / zizmor / audit","started_at":"2026-09-17T07:47:33Z","status":"completed"}
+{"completed_at":"2026-09-17T07:49:14Z","conclusion":"success","id":105120259565,"name":"ASH Security Scan","started_at":"2026-09-17T07:47:34Z","status":"completed"}
+## failed logs pr.yml
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:36.8689986Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:36.8691414Z ##[group]Fetching the repository
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:36.8693710Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +bb24b7fd19237a85ebc578e06722bbc4d01c97d2:refs/remotes/origin/main
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5116332Z From https://github.com/MasatoraAtarashi/html-hosting-myself
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5124102Z  * [new ref]         bb24b7fd19237a85ebc578e06722bbc4d01c97d2 -> origin/main
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5126406Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5126958Z ##[group]Determining the checkout info
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5127583Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5128133Z [command]/usr/bin/git sparse-checkout disable
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5130272Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5132470Z ##[group]Checking out the ref
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5133122Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5702008Z Switched to a new branch 'main'
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5711470Z branch 'main' set up to track 'origin/main'.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5727914Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5759985Z [command]/usr/bin/git log -1 --format=%H
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5784560Z bb24b7fd19237a85ebc578e06722bbc4d01c97d2
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5791674Z ##[group]Removing auth
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5795171Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.5829148Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6025595Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6052360Z http.https://github.com/.extraheader
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6058632Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6088818Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6294063Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6322252Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6530092Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6701496Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6702997Z ##[group]Run pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6703322Z with:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6703495Z   dest: ~/setup-pnpm
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6703678Z   run_install: null
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6703855Z   cache: false
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6704049Z   cache_dependency_path: pnpm-lock.yaml
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6704298Z   package_json_file: package.json
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6704512Z   standalone: false
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.6704686Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:37.7941624Z ##[group]Running self-installer...
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:38.1852600Z (node:2041) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:38.1869253Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:38.5375037Z Progress: resolved 1, reused 0, downloaded 0, added 0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:38.5472861Z Packages: +1
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:38.5482337Z +
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:39.0566472Z Progress: resolved 1, reused 0, downloaded 1, added 1, done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:39.9519371Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:39.9519854Z dependencies:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:39.9520314Z + pnpm 10.30.2 (12.4.2 is available)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:39.9520527Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2102299Z Done in 2.2s
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2245833Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2246588Z Installation Completed!
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2422205Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2423240Z ##[group]Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2423540Z with:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2423729Z   node-version: 22
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2423932Z   always-auth: false
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2424121Z   check-latest: false
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2426171Z   token: ***
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2426483Z env:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2426720Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.2426977Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.3650074Z Found in cache @ /opt/hostedtoolcache/node/22.23.2/x64
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.3652121Z (node:2054) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.3652971Z (Use `node --trace-deprecation ...` to show where the warning was created)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.3654953Z ##[group]Environment details
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8091411Z node: v22.23.2
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8092198Z npm: 10.9.8
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8166548Z yarn: 1.22.22
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8168137Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8258065Z ##[group]Run if [ -f pnpm-lock.yaml ]; then
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8258615Z ^[[36;1mif [ -f pnpm-lock.yaml ]; then^[[0m
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8258987Z ^[[36;1m  pnpm install --frozen-lockfile^[[0m
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8259342Z ^[[36;1melse^[[0m
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8259551Z ^[[36;1m  pnpm install^[[0m
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8259749Z ^[[36;1mfi^[[0m
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8305177Z shell: /usr/bin/bash -e {0}
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8305401Z env:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8305624Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:40.8305882Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:41.5982369Z Progress: resolved 1, reused 0, downloaded 0, added 0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:42.6029625Z Progress: resolved 29, reused 0, downloaded 10, added 0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:43.5987280Z Progress: resolved 99, reused 0, downloaded 65, added 0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:44.5987351Z Progress: resolved 273, reused 0, downloaded 123, added 0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:45.5987032Z Progress: resolved 363, reused 0, downloaded 177, added 0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:46.0671524Z  WARN  3 deprecated subdependencies found: @esbuild-kit/core-utils@3.3.2, @esbuild-kit/esm-loader@2.6.5, git-raw-commits@4.0.0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:46.0722186Z Packages: +203
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:46.0722856Z ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:46.5993649Z Progress: resolved 366, reused 0, downloaded 191, added 0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.4368629Z Progress: resolved 366, reused 0, downloaded 205, added 203, done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.4860040Z .../node_modules/lefthook postinstall$ node postinstall.js
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.4870258Z .../esbuild@0.18.20/node_modules/esbuild postinstall$ node install.js
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.4877485Z .../esbuild@0.28.1/node_modules/esbuild postinstall$ node install.js
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.4884699Z .../esbuild@0.25.12/node_modules/esbuild postinstall$ node install.js
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.5443773Z .../esbuild@0.28.2/node_modules/esbuild postinstall$ node install.js
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.5760909Z .../node_modules/lefthook postinstall: Done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.6059103Z .../node_modules/workerd postinstall$ node install.js
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.6678604Z .../esbuild@0.28.1/node_modules/esbuild postinstall: Done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:47.8821479Z .../node_modules/workerd postinstall$ node install.js
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:48.3167982Z .../esbuild@0.18.20/node_modules/esbuild postinstall: Done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:48.7645764Z .../esbuild@0.28.2/node_modules/esbuild postinstall: Done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:49.2310569Z .../esbuild@0.25.12/node_modules/esbuild postinstall: Done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:50.8485715Z .../node_modules/workerd postinstall: Done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:47:52.3097653Z .../node_modules/workerd postinstall: Done
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9203105Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9204292Z dependencies:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9204879Z + @hono/zod-validator 0.9.1
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9210673Z + drizzle-orm 0.45.2
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9239151Z + fflate 0.8.3
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9239646Z + hono 4.13.8
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9240213Z + zod 4.6.5
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9244261Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9244960Z devDependencies:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9245698Z + @cloudflare/vitest-pool-workers 0.21.3 (0.22.0 is available)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9249831Z + @commitlint/cli 19.8.1 (21.2.2 is available)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9251946Z + @commitlint/config-conventional 19.8.1 (21.2.2 is available)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9254986Z + @types/node 24.13.5
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9255822Z + drizzle-kit 0.31.10
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9256335Z + lefthook 2.1.14
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9256789Z + prettier 3.9.7
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9257273Z + typescript 5.9.3 (7.0.2 is available)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9257856Z + vite 7.3.6 (8.3.0 is available)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9258589Z + vitest 4.1.11 (5.0.1 is available)
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9259218Z + wrangler 4.133.0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9259560Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9260701Z Done in 19.9s using pnpm v10.30.2
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9658936Z ##[group]Run pnpm typecheck
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9659208Z ^[[36;1mpnpm typecheck^[[0m
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9691339Z shell: /usr/bin/bash -e {0}
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9691554Z env:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9691759Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:00.9692011Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.1899049Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.1906658Z > html-hosting-myself@ typecheck /home/runner/work/html-hosting-myself/html-hosting-myself
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.1907514Z > pnpm cf-typegen && tsc --noEmit
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.1907907Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.4154532Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.4164800Z > html-hosting-myself@ cf-typegen /home/runner/work/html-hosting-myself/html-hosting-myself
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.4165713Z > wrangler types
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:01.4166059Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3059081Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3060313Z  ⛅️ wrangler 4.133.0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3061016Z ────────────────────
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3353286Z Generating project types...
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3353782Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3407575Z interface __BaseEnv_Env {
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3408157Z 	BUCKET: R2Bucket;
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3408854Z 	DB: D1Database;
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3409340Z }
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3409850Z declare namespace Cloudflare {
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3410372Z 	interface GlobalProps {
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3411085Z 		mainModule: typeof import("./workers/app");
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3411720Z 	}
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3429056Z 	interface Env extends __BaseEnv_Env {}
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3430485Z }
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3431046Z interface Env extends __BaseEnv_Env {}
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3431476Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3431853Z Generating runtime types...
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:02.3432223Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6749956Z Runtime types generated.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6750442Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6750726Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6756413Z ✨ Types written to worker-configuration.d.ts
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6756873Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6762473Z 📖 Read about runtime types
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6763401Z https://developers.cloudflare.com/workers/languages/typescript/#generate-types
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6764674Z 📣 Remember to rerun 'wrangler types' after you change your wrangler.jsonc file.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:03.6765233Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.6972103Z ##[group]Run pnpm lint
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.6972448Z ^[[36;1mpnpm lint^[[0m
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.7017572Z shell: /usr/bin/bash -e {0}
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.7017890Z env:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.7018213Z   PNPM_HOME: /home/runner/setup-pnpm/node_modules/.bin
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.7018924Z ##[endgroup]
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.9150794Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.9167538Z > html-hosting-myself@ lint /home/runner/work/html-hosting-myself/html-hosting-myself
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.9168534Z > prettier --check .
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.9168955Z 
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:06.9877905Z Checking formatting...
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:07.9617690Z [^[[33mwarn^[[39m] README.md
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.3030516Z [^[[33mwarn^[[39m] Code style issues found in the above file. Run Prettier with --write to fix.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.3265123Z  ELIFECYCLE  Command failed with exit code 1.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.3502715Z ##[error]Process completed with exit code 1.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.3583172Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.3584101Z Post job cleanup.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.4849107Z Pruning is unnecessary.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.5044302Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.5045869Z Post job cleanup.
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.5959833Z [command]/usr/bin/git version
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6015479Z git version 2.55.0
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6093827Z Temporarily overriding HOME='/home/runner/work/_temp/627a7112-43ee-417d-97db-d596de4ba652' before making global git config changes
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6095101Z Adding repository directory to the temporary git global config as a safe directory
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6096316Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/html-hosting-myself/html-hosting-myself
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6098129Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6146610Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6455392Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6507673Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6802463Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.6847505Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.7300645Z Cleaning up orphan processes
+Typecheck / Lint / Test	UNKNOWN STEP	2026-09-17T07:48:08.7531071Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020, pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+## jobs for latest deploy.yml
+deploy run 35196308141
+{"conclusion":"success","id":105120259486,"name":"Build \u0026 Deploy to Cloudflare Workers","status":"completed"}
