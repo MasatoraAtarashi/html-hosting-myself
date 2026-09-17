@@ -1,12 +1,10 @@
-# latest runs on main
+# latest runs on main 08:10:03
 ## deploy.yml
 {"conclusion":"success","created_at":"2026-09-17T08:02:38Z","display_title":"fix: restore ヘッダ spelling in README","head_sha":"af5d84a03eaec12eb5ddc9c93a2d0b99b5dec388","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197576106","id":35197576106,"status":"completed"}
 {"conclusion":"success","created_at":"2026-09-17T08:01:31Z","display_title":"style: format README.md with Prettier","head_sha":"ada58810bf1b826e288947272ee1a53f9f7b6fa6","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197479870","id":35197479870,"status":"completed"}
-{"conclusion":"success","created_at":"2026-09-17T07:47:31Z","display_title":"fix: skip CI D1 create (token 10000) and deploy with provisioned data…","head_sha":"bb24b7fd19237a85ebc578e06722bbc4d01c97d2","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35196308141","id":35196308141,"status":"completed"}
 ## pr.yml
 {"conclusion":null,"created_at":"2026-09-17T08:02:38Z","display_title":"fix: restore ヘッダ spelling in README","head_sha":"af5d84a03eaec12eb5ddc9c93a2d0b99b5dec388","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197576045","id":35197576045,"status":"in_progress"}
 {"conclusion":"cancelled","created_at":"2026-09-17T08:01:31Z","display_title":"style: format README.md with Prettier","head_sha":"ada58810bf1b826e288947272ee1a53f9f7b6fa6","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35197479909","id":35197479909,"status":"completed"}
-{"conclusion":"failure","created_at":"2026-09-17T07:47:31Z","display_title":"fix: skip CI D1 create (token 10000) and deploy with provisioned data…","head_sha":"bb24b7fd19237a85ebc578e06722bbc4d01c97d2","html_url":"https://github.com/MasatoraAtarashi/html-hosting-myself/actions/runs/35196308117","id":35196308117,"status":"completed"}
 ## jobs for latest pr.yml
 pr run 35197576045
 {"completed_at":"2026-09-17T08:04:12Z","conclusion":"success","id":105124430397,"name":"ASH Security Scan","started_at":"2026-09-17T08:02:58Z","status":"completed"}
