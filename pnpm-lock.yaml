@@ -3,3 +3,7 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+
+overrides:
+  js-yaml: '>=4.3.2'
+  sharp: '>=0.35.4'
