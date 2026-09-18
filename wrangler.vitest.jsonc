@@ -8,6 +8,11 @@
   "compatibility_date": "2025-10-08",
   "compatibility_flags": ["nodejs_compat"],
   "main": "./test/worker.ts",
+  // 本番と同じく public/ を Static Assets として配信し、/favicon.* をテストできるようにする
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+  },
   "observability": {
     "enabled": false,
   },
