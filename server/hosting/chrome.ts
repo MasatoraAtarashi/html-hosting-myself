@@ -157,7 +157,15 @@ function chromeStyles(): string {
 }
 #hh-lib-chrome .hh-lib-menu a[aria-current="page"]{background:#ecfdf8 !important;color:#0f766e !important;font-weight:700 !important;}
 @media (max-width:420px){
-  #hh-lib-chrome .hh-lib-title{display:none !important;}
+  #hh-lib-chrome{flex-wrap:wrap !important;}
+  #hh-lib-chrome .hh-lib-title{
+    order:10 !important;
+    flex:1 0 100% !important;
+    width:100% !important;
+    min-height:28px !important;
+    min-width:0 !important;
+    padding:0 4px 4px !important;
+  }
 }
 </style>`;
 }
