@@ -186,10 +186,10 @@ form.addEventListener("submit", async (event) => {
     const url = absoluteShareUrl(body.item.url);
     shareUrl.value = url;
     shareBox.hidden = false;
-    setMessage("ホストしました。共有 URL をコピーできます。", "success");
+    setMessage("置きました。あとから見る用の URL をコピーできます。", "success");
     form.reset();
     fileName.textContent = "";
-    document.getElementById("ttl").value = "7d";
+    document.getElementById("ttl").value = "keep";
     await loadHosts();
   } catch {
     setMessage("アップロードに失敗しました。通信環境を確認してください", "error");

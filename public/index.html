@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>html-hosting-myself</title>
-    <meta name="description" content="AI が作った HTML や静的サイトを置いて、短い URL で共有する" />
+    <meta name="description" content="自分用メモやリサーチ用 HTML を置いて、あとからスマホで見る" />
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>"
@@ -15,16 +15,16 @@
     <header class="site-header">
       <div class="container header-inner">
         <span class="brand">html-hosting-myself</span>
-        <span class="header-note">自分用ホスティング</span>
+        <span class="header-note">自分用メモ / リサーチ</span>
       </div>
     </header>
 
     <main class="container">
       <section class="hero">
-        <h1>HTML を置いて、URL で共有する</h1>
+        <h1>自分用メモ / リサーチを置く</h1>
         <p class="lead">
           AI が生成した HTML や、静的サイトの ZIP をドロップしてください。短いスラッグの URL
-          が発行されます。既定の公開期限は 7 日です。
+          が発行されます。既定は期限なしです。一時的に置きたいときは 1 日 / 7 日 / 30 日も選べます。
         </p>
       </section>
 
@@ -45,20 +45,20 @@
 
           <div class="upload-row">
             <label class="ttl-label">
-              公開期限
+              保存期限
               <select id="ttl" name="ttl">
+                <option value="keep" selected>期限なし（既定）</option>
                 <option value="1d">1 日</option>
-                <option value="7d" selected>7 日（既定）</option>
+                <option value="7d">7 日</option>
                 <option value="30d">30 日</option>
-                <option value="keep">期限なし</option>
               </select>
             </label>
-            <button class="button button-primary" type="submit">ホストする</button>
+            <button class="button button-primary" type="submit">置く</button>
           </div>
         </form>
         <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
         <div id="share-box" class="share-box" hidden>
-          <label for="share-url">共有 URL</label>
+          <label for="share-url">閲覧 URL</label>
           <div class="share-row">
             <input id="share-url" type="text" readonly />
             <button id="copy-link" class="button" type="button">コピー</button>
@@ -67,8 +67,8 @@
       </section>
 
       <section class="list-card" aria-labelledby="list-heading">
-        <h2 id="list-heading">最近のホスト</h2>
-        <p id="list-empty" class="muted">まだホストがありません。</p>
+        <h2 id="list-heading">最近置いたもの</h2>
+        <p id="list-empty" class="muted">まだ何も置いていません。</p>
         <ul id="host-list" class="host-list"></ul>
       </section>
     </main>
@@ -76,9 +76,9 @@
     <footer class="site-footer">
       <div class="container">
         <p>
-          ダッシュボードと共有 URL（<code>/p/*</code>）はログインなしで開けます。書き込みは
+          ダッシュボードと閲覧 URL（<code>/p/*</code>）はログインなしで開けます。書き込みは
           <code>API_TOKEN</code> が Worker secret として設定されているときだけ Bearer
-          認証が必要です。未設定の初回は、この画面から直接アップロードできます。
+          認証が必要です。未設定の初回は、この画面から直接置けます。
         </p>
       </div>
     </footer>

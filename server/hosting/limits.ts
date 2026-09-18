@@ -10,7 +10,8 @@ export const TTL_OPTIONS = {
 
 export type TtlOption = keyof typeof TTL_OPTIONS;
 
-export const DEFAULT_TTL: TtlOption = "7d";
+// 自分用アーカイブが主用途なので、ttl 未指定は期限なし（keep）にする
+export const DEFAULT_TTL: TtlOption = "keep";
 
 export const ALLOWED_UPLOAD_EXT = new Set(["html", "htm", "zip"]);
 
