@@ -33,7 +33,11 @@ describe("hosting API", () => {
     const page = await exports.default.fetch(`https://example.com/p/${body.item.slug}/`);
     expect(page.status).toBe(200);
     expect(page.headers.get("content-type")).toMatch(/text\/html/);
-    expect(await page.text()).toContain("公開ページ");
+    const pageHtml = await page.text();
+    expect(pageHtml).toContain("公開ページ");
+    expect(pageHtml).toContain("一覧へ");
+    expect(pageHtml).toContain('href="/"');
+    expect(pageHtml).toContain('id="hh-lib-chrome"');
   });
 
   it("共有 URL は認証なしで HTML を返す", async () => {
@@ -63,12 +67,88 @@ describe("hosting API", () => {
 
     const html = await exports.default.fetch(`https://example.com/p/${item.slug}/`);
     expect(html.status).toBe(200);
-    expect(await html.text()).toContain("zip ok");
+    const htmlText = await html.text();
+    expect(htmlText).toContain("zip ok");
+    expect(htmlText).toContain("一覧へ");
 
     const css = await exports.default.fetch(`https://example.com/p/${item.slug}/css/app.css`);
     expect(css.status).toBe(200);
     expect(css.headers.get("content-type")).toMatch(/text\/css/);
-    expect(await css.text()).toContain("color:#c00");
+    const cssText = await css.text();
+    expect(cssText).toContain("color:#c00");
+    expect(cssText).not.toContain("一覧へ");
+    expect(cssText).not.toContain("hh-lib-chrome");
+  });
+
+  it("ZIP 内のネストした HTML にも書庫バーを付ける", async () => {
+    const zipped = zipSync({
+      "site/index.html": strToU8("<!doctype html><html><body><p>home</p></body></html>"),
+      "site/notes/a.html": strToU8("<!doctype html><html><body><p>nested page</p></body></html>"),
+    });
+    const file = new File([zipped], "site.zip", { type: "application/zip" });
+    const created = await upload(file);
+    const { item } = (await created.json()) as { item: { slug: string } };
+
+    const nested = await exports.default.fetch(`https://example.com/p/${item.slug}/notes/a.html`);
+    expect(nested.status).toBe(200);
+    const text = await nested.text();
+    expect(text).toContain("nested page");
+    expect(text).toContain("一覧へ");
+    expect(text).toContain('href="/"');
+  });
+
+  it("複数ホストでは前へ / 次へが一覧順（新しい→古い）になる", async () => {
+    const olderFile = new File(
+      ["<!doctype html><html><body><p>old</p></body></html>"],
+      "old.html",
+      {
+        type: "text/html",
+      },
+    );
+    const newerFile = new File(
+      ["<!doctype html><html><body><p>new</p></body></html>"],
+      "new.html",
+      {
+        type: "text/html",
+      },
+    );
+    const olderCreated = await upload(olderFile);
+    const newerCreated = await upload(newerFile);
+    const older = (await olderCreated.json()) as { item: { slug: string } };
+    const newer = (await newerCreated.json()) as { item: { slug: string } };
+
+    await env.DB.prepare("UPDATE hosts SET created_at = ? WHERE slug = ?")
+      .bind(1_000, older.item.slug)
+      .run();
+    await env.DB.prepare("UPDATE hosts SET created_at = ? WHERE slug = ?")
+      .bind(2_000, newer.item.slug)
+      .run();
+
+    const newerPage = await exports.default.fetch(`https://example.com/p/${newer.item.slug}/`);
+    const newerHtml = await newerPage.text();
+    expect(newerHtml).toContain(`href="/p/${older.item.slug}/"`);
+    expect(newerHtml).toContain("次へ");
+    expect(newerHtml).toContain('aria-disabled="true">前へ');
+
+    const olderPage = await exports.default.fetch(`https://example.com/p/${older.item.slug}/`);
+    const olderHtml = await olderPage.text();
+    expect(olderHtml).toContain(`href="/p/${newer.item.slug}/"`);
+    expect(olderHtml).toContain("前へ");
+    expect(olderHtml).toContain('aria-disabled="true">次へ');
+  });
+
+  it("閲覧ページのタイトルは書庫バーでもエスケープされる", async () => {
+    const html =
+      '<!doctype html><html><head><title>x & y "z"</title></head><body><p>safe</p></body></html>';
+    const file = new File([html], "safe.html", { type: "text/html" });
+    const created = await upload(file);
+    const { item } = (await created.json()) as { item: { slug: string; title: string } };
+    expect(item.title).toBe(`x & y "z"`);
+
+    const page = await exports.default.fetch(`https://example.com/p/${item.slug}/`);
+    const body = await page.text();
+    expect(body).toContain("x &amp; y &quot;z&quot;");
+    expect(body).not.toContain(`title="x & y "z""`);
   });
 
   it("期限切れのホストは 410 になり、掃除で削除される", async () => {

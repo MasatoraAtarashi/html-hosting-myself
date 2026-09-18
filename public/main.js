@@ -8,6 +8,12 @@ const shareUrl = document.getElementById("share-url");
 const copyLink = document.getElementById("copy-link");
 const hostList = document.getElementById("host-list");
 const listEmpty = document.getElementById("list-empty");
+const listNone = document.getElementById("list-none");
+const listCount = document.getElementById("list-count");
+const hostSearch = document.getElementById("host-search");
+
+/** @type {Array<{slug: string, title: string, url: string, createdAt: number, expiresAt: number | null, sizeBytes: number, fileCount: number}>} */
+let hostsCache = [];
 
 function setMessage(text, kind) {
   message.textContent = text;
@@ -16,14 +22,39 @@ function setMessage(text, kind) {
 
 function formatExpiry(expiresAt) {
   if (expiresAt === null) return "期限なし";
-  const date = new Date(expiresAt);
-  return `期限 ${date.toLocaleString("ja-JP")}`;
+  const remaining = expiresAt - Date.now();
+  if (remaining <= 0) return "期限切れ";
+  const days = Math.ceil(remaining / 86_400_000);
+  if (days <= 1) return "期限 本日";
+  if (days <= 30) return `あと${days}日`;
+  return `期限 ${new Date(expiresAt).toLocaleDateString("ja-JP")}`;
 }
 
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatCreatedAt(createdAt) {
+  const date = new Date(createdAt);
+  const absolute = date.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  const diff = Date.now() - createdAt;
+  if (!Number.isFinite(diff) || diff < 0) {
+    return { absolute, relative: absolute, iso: date.toISOString() };
+  }
+  const sec = Math.floor(diff / 1000);
+  let relative = "たった今";
+  if (sec >= 60 * 60 * 24 * 365) relative = `${Math.floor(sec / (60 * 60 * 24 * 365))}年前`;
+  else if (sec >= 60 * 60 * 24 * 30) relative = `${Math.floor(sec / (60 * 60 * 24 * 30))}か月前`;
+  else if (sec >= 60 * 60 * 24) relative = `${Math.floor(sec / (60 * 60 * 24))}日前`;
+  else if (sec >= 60 * 60) relative = `${Math.floor(sec / (60 * 60))}時間前`;
+  else if (sec >= 60) relative = `${Math.floor(sec / 60)}分前`;
+  return { absolute, relative, iso: date.toISOString() };
 }
 
 async function copyText(value) {
@@ -41,37 +72,50 @@ function absoluteShareUrl(path) {
   return new URL(path, window.location.origin).href;
 }
 
-async function loadHosts() {
-  const res = await fetch("/api/hosts");
-  if (res.status === 401) {
-    setMessage(
-      "書き込み API は API_TOKEN で保護されています。curl で Bearer を付けるか、secret 未設定の preview を使ってください。",
-      "error",
-    );
-    return;
-  }
-  if (!res.ok) {
-    setMessage("一覧の取得に失敗しました", "error");
-    return;
-  }
-  const body = await res.json();
-  const items = body.items ?? [];
+function queryMatches(item, query) {
+  if (!query) return true;
+  return item.title.toLowerCase().includes(query);
+}
+
+function renderHosts() {
+  const query = (hostSearch.value ?? "").trim().toLowerCase();
+  const items = hostsCache.filter((item) => queryMatches(item, query));
   hostList.replaceChildren();
-  listEmpty.hidden = items.length > 0;
+  listEmpty.hidden = hostsCache.length > 0;
+  listNone.hidden = !(hostsCache.length > 0 && items.length === 0);
+  const searchLabel = hostSearch.closest(".search-label");
+  if (searchLabel) searchLabel.hidden = hostsCache.length === 0;
+  hostSearch.hidden = hostsCache.length === 0;
+  if (hostsCache.length === 0) {
+    listCount.textContent = "";
+  } else if (query) {
+    listCount.textContent = `${items.length} / ${hostsCache.length}件`;
+  } else {
+    listCount.textContent = `${hostsCache.length}件`;
+  }
 
   for (const item of items) {
+    const created = formatCreatedAt(item.createdAt);
     const li = document.createElement("li");
     li.className = "host-item";
 
-    const meta = document.createElement("div");
-    meta.className = "host-meta";
-    const link = document.createElement("a");
-    link.href = item.url;
-    link.textContent = item.title;
-    const detail = document.createElement("p");
-    detail.className = "muted";
-    detail.textContent = `${item.slug} · ${formatSize(item.sizeBytes)} · ${formatExpiry(item.expiresAt)}`;
-    meta.append(link, detail);
+    const main = document.createElement("a");
+    main.className = "host-main";
+    main.href = item.url;
+    const title = document.createElement("span");
+    title.className = "host-title";
+    title.textContent = item.title;
+    const meta = document.createElement("span");
+    meta.className = "host-meta-line";
+    const time = document.createElement("time");
+    time.dateTime = created.iso;
+    time.textContent = `${created.relative} · ${created.absolute}`;
+    const size = document.createElement("span");
+    size.textContent = formatSize(item.sizeBytes);
+    const expiry = document.createElement("span");
+    expiry.textContent = formatExpiry(item.expiresAt);
+    meta.append(time, size, expiry);
+    main.append(title, meta);
 
     const actions = document.createElement("div");
     actions.className = "host-actions";
@@ -79,7 +123,7 @@ async function loadHosts() {
     const copyBtn = document.createElement("button");
     copyBtn.type = "button";
     copyBtn.className = "button button-ghost";
-    copyBtn.textContent = "リンクをコピー";
+    copyBtn.textContent = "コピー";
     copyBtn.addEventListener("click", async () => {
       const ok = await copyText(absoluteShareUrl(item.url));
       setMessage(
@@ -88,24 +132,28 @@ async function loadHosts() {
       );
     });
 
-    const keepBtn = document.createElement("button");
-    keepBtn.type = "button";
-    keepBtn.className = "button button-ghost";
-    keepBtn.textContent = "期限なしにする";
-    keepBtn.disabled = item.expiresAt === null;
-    keepBtn.addEventListener("click", async () => {
-      const patch = await fetch(`/api/hosts/${item.slug}`, {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ttl: "keep" }),
+    actions.append(copyBtn);
+
+    if (item.expiresAt !== null) {
+      const keepBtn = document.createElement("button");
+      keepBtn.type = "button";
+      keepBtn.className = "button button-ghost";
+      keepBtn.textContent = "期限なし";
+      keepBtn.addEventListener("click", async () => {
+        const patch = await fetch(`/api/hosts/${item.slug}`, {
+          method: "PATCH",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ ttl: "keep" }),
+        });
+        if (!patch.ok) {
+          setMessage("更新に失敗しました", "error");
+          return;
+        }
+        setMessage("期限なしにしました", "success");
+        await loadHosts();
       });
-      if (!patch.ok) {
-        setMessage("更新に失敗しました", "error");
-        return;
-      }
-      setMessage("期限なしにしました", "success");
-      await loadHosts();
-    });
+      actions.append(keepBtn);
+    }
 
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
@@ -123,10 +171,28 @@ async function loadHosts() {
       await loadHosts();
     });
 
-    actions.append(copyBtn, keepBtn, deleteBtn);
-    li.append(meta, actions);
+    actions.append(deleteBtn);
+    li.append(main, actions);
     hostList.append(li);
   }
+}
+
+async function loadHosts() {
+  const res = await fetch("/api/hosts");
+  if (res.status === 401) {
+    setMessage(
+      "書き込み API は API_TOKEN で保護されています。curl で Bearer を付けるか、secret 未設定の preview を使ってください。",
+      "error",
+    );
+    return;
+  }
+  if (!res.ok) {
+    setMessage("一覧の取得に失敗しました", "error");
+    return;
+  }
+  const body = await res.json();
+  hostsCache = body.items ?? [];
+  renderHosts();
 }
 
 dropzone.addEventListener("dragover", (event) => {
@@ -151,6 +217,10 @@ dropzone.addEventListener("drop", (event) => {
 
 fileInput.addEventListener("change", () => {
   fileName.textContent = fileInput.files?.[0]?.name ?? "";
+});
+
+hostSearch.addEventListener("input", () => {
+  renderHosts();
 });
 
 form.addEventListener("submit", async (event) => {
@@ -186,10 +256,11 @@ form.addEventListener("submit", async (event) => {
     const url = absoluteShareUrl(body.item.url);
     shareUrl.value = url;
     shareBox.hidden = false;
-    setMessage("置きました。あとから見る用の URL をコピーできます。", "success");
+    setMessage("書庫に置きました。あとから見返す用の URL をコピーできます。", "success");
     form.reset();
     fileName.textContent = "";
     document.getElementById("ttl").value = "keep";
+    hostSearch.value = "";
     await loadHosts();
   } catch {
     setMessage("アップロードに失敗しました。通信環境を確認してください", "error");
