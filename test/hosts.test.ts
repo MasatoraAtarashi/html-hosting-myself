@@ -116,6 +116,14 @@ describe("hosting API", () => {
     expect(page.status).toBe(404);
   });
 
+  it("ttl を省略すると expiresAt は null（期限なし）になる", async () => {
+    const file = new File(["<!doctype html><p>archive</p>"], "archive.html", { type: "text/html" });
+    const created = await upload(file);
+    expect(created.status).toBe(201);
+    const { item } = (await created.json()) as { item: { expiresAt: number | null } };
+    expect(item.expiresAt).toBeNull();
+  });
+
   it("keep にすると expires_at が null になる", async () => {
     const file = new File(["<!doctype html><p>keep</p>"], "keep.html", { type: "text/html" });
     const created = await upload(file, "7d");
@@ -130,6 +138,11 @@ describe("hosting API", () => {
     expect(patched.status).toBe(200);
     const body = (await patched.json()) as { item: { expiresAt: number | null } };
     expect(body.item.expiresAt).toBeNull();
+  });
+
+  it("不正な ttl は 400", async () => {
+    const file = new File(["<!doctype html><p>x</p>"], "x.html", { type: "text/html" });
+    expect((await upload(file, "forever")).status).toBe(400);
   });
 
   it("file が無い・非対応形式は 400", async () => {

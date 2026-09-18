@@ -1,6 +1,6 @@
 # html-hosting-myself
 
-自分用の薄い静的ホスティング。AI が作った HTML や静的サイトの ZIP を置いて短い URL で共有します。BASE の [pon](https://devblog.thebase.in/entry/pon) や [ssss](https://ssss-app.com) の「置いて共有する」体験を、Cloudflare Worker **`html-hosting-myself`** 上で動かします。
+自分用の薄い静的ホスティング。メモやリサーチ用の HTML、AI が作った静的サイトの ZIP を置いて、あとからスマホで見るための短い URL を発行します。BASE の [pon](https://devblog.thebase.in/entry/pon) や [ssss](https://ssss-app.com) の「置いて開く」体験を、Cloudflare Worker **`html-hosting-myself`** 上で動かします。
 
 UI は HTML をドロップするダッシュボードです。
 
@@ -54,7 +54,7 @@ secret を入れたあと:
 
 **https://html-hosting-myself.kaito-technology.workers.dev**
 
-ダッシュボードに `.html` または `.zip` をドロップすると `/p/<slug>/` の共有 URL が発行されます。
+ダッシュボードに `.html` または `.zip` をドロップすると `/p/<slug>/` の閲覧 URL が発行されます。
 
 ### 4. （任意）書き込みを閉じる
 
@@ -92,29 +92,28 @@ http://localhost:8787 で開きます。
 ## アップロードの流れ
 
 1. ダッシュボードで単一の `.html`、または HTML/CSS/JS/画像を含む `.zip` をドロップする
-2. 既定 TTL は **7 日**（1 日 / 30 日 / 期限なし も選択可）
-3. 発行された URL をコピーして共有する
-4. 一覧から削除、または「期限なしにする」ができる
+2. 既定 TTL は **期限なし**（必要なら 1 日 / 7 日 / 30 日も選択可）
+3. 発行された URL をコピーして、あとからスマホなどで開く
+4. 一覧から削除、または期限付きにしたものを「期限なしにする」ができる
 
-ZIP は共通のルートフォルダを自動で剥がします。HTML は `Content-Type: text/html` でページとして描画されます。共有 URL（`/p/*`）はログイン不要です。
+ZIP は共通のルートフォルダを自動で剥がします。HTML は `Content-Type: text/html` でページとして描画されます。閲覧 URL（`/p/*`）はログイン不要です。
 
 ## API
 
 ```bash
 curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/upload" \
   -H "Authorization: Bearer $API_TOKEN" \
-  -F "file=@index.html" \
-  -F "ttl=7d"
+  -F "file=@index.html"
 ```
 
 `API_TOKEN` が未設定のときは、Authorization ヘッダなしでも同じフォームを送れます。
 
-| メソッド | パス               | 内容                                                             |
-| -------- | ------------------ | ---------------------------------------------------------------- |
-| `POST`   | `/api/upload`      | `file`（html/zip）と任意の `ttl`（`1d` / `7d` / `30d` / `keep`） |
-| `GET`    | `/api/hosts`       | ホスト一覧                                                       |
-| `PATCH`  | `/api/hosts/:slug` | `{ "ttl": "keep" }` などで期限を変更                             |
-| `DELETE` | `/api/hosts/:slug` | 削除（R2 上のファイルも消す）                                    |
+| メソッド | パス               | 内容                                                                              |
+| -------- | ------------------ | --------------------------------------------------------------------------------- |
+| `POST`   | `/api/upload`      | `file`（html/zip）と任意の `ttl`（省略時は `keep`。`1d` / `7d` / `30d` / `keep`） |
+| `GET`    | `/api/hosts`       | ホスト一覧                                                                        |
+| `PATCH`  | `/api/hosts/:slug` | `{ "ttl": "keep" }` などで期限を変更                                              |
+| `DELETE` | `/api/hosts/:slug` | 削除（R2 上のファイルも消す）                                                     |
 
 ## 主なコマンド
 
@@ -131,7 +130,7 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
 
 ## Cloudflare Access（後から足す場合）
 
-初回は Access なしです。本番でダッシュボードを閉じたいときは Zero Trust で Self-hosted Application を追加し、`/p/*` に Bypass を付ければ共有 URL はログインなしのままにできます。エージェントからの `POST /api/upload` は `/api/*` を Bypass し、Worker 側の `API_TOKEN` で守ります。
+初回は Access なしです。本番でダッシュボードを閉じたいときは Zero Trust で Self-hosted Application を追加し、`/p/*` に Bypass を付ければ閲覧 URL はログインなしのままにできます。エージェントからの `POST /api/upload` は `/api/*` を Bypass し、Worker 側の `API_TOKEN` で守ります。
 
 ## エージェント向け
 
