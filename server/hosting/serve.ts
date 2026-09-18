@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import type { AppEnv } from "../env";
 import { deleteHostObjects } from "./cleanup";
+import { applyArchiveChrome, isHtmlContentType, loadArchiveNav } from "./chrome";
 import { contentTypeFor } from "./mime";
 import { isValidSlug } from "./slug";
 
@@ -28,9 +29,9 @@ export async function serveHost(c: Context<AppEnv>): Promise<Response> {
     return c.redirect(`/p/${slug}/`, 302);
   }
 
-  const host = await c.env.DB.prepare("SELECT slug, expires_at FROM hosts WHERE slug = ?")
+  const host = await c.env.DB.prepare("SELECT slug, title, expires_at FROM hosts WHERE slug = ?")
     .bind(slug)
-    .first<{ slug: string; expires_at: number | null }>();
+    .first<{ slug: string; title: string; expires_at: number | null }>();
 
   if (!host) {
     return c.text("Not Found", 404);
@@ -60,12 +61,27 @@ export async function serveHost(c: Context<AppEnv>): Promise<Response> {
     return c.text("Not Found", 404);
   }
 
+  const contentType = contentTypeFor(relative);
   const headers = new Headers();
-  headers.set("content-type", contentTypeFor(relative));
-  headers.set("cache-control", "public, max-age=300");
+  headers.set("content-type", contentType);
+  headers.set(
+    "cache-control",
+    isHtmlContentType(contentType) ? "private, max-age=60" : "public, max-age=300",
+  );
   headers.set("x-content-type-options", "nosniff");
   const requestId = c.get("requestId");
   if (requestId) headers.set("x-request-id", requestId);
 
-  return new Response(object.body, { status: 200, headers });
+  const response = new Response(object.body, { status: 200, headers });
+  if (!isHtmlContentType(contentType)) {
+    return response;
+  }
+
+  // HTML だけ書庫バーを注入する。CSS/画像はそのまま返し、ZIP 配下の HTML にも同じバーが付く。
+  const hosts = await loadArchiveNav(c.env.DB);
+  return applyArchiveChrome(response, {
+    currentSlug: slug,
+    currentTitle: host.title,
+    hosts,
+  });
 }

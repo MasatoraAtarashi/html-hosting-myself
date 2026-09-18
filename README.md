@@ -2,7 +2,7 @@
 
 自分用の薄い静的ホスティング。メモやリサーチ用の HTML、AI が作った静的サイトの ZIP を置いて、あとからスマホで見るための短い URL を発行します。BASE の [pon](https://devblog.thebase.in/entry/pon) や [ssss](https://ssss-app.com) の「置いて開く」体験を、Cloudflare Worker **`html-hosting-myself`** 上で動かします。
 
-UI は HTML をドロップするダッシュボードです。
+UI は保存したページを見返す書庫です。ダッシュボード先頭が一覧で、閲覧ページ（`/p/*` の HTML）には「一覧へ」と前後ジャンプのバーが付きます。
 
 このリポジトリにトークンはコミットしません。GitHub Actions の secrets を自分で入れ、Deploy を動かしてください。
 
@@ -54,7 +54,7 @@ secret を入れたあと:
 
 **https://html-hosting-myself.kaito-technology.workers.dev**
 
-ダッシュボードに `.html` または `.zip` をドロップすると `/p/<slug>/` の閲覧 URL が発行されます。
+ダッシュボードに `.html` または `.zip` をドロップすると `/p/<slug>/` の閲覧 URL が発行されます。スマホの閲覧画面からは「一覧へ」で書庫に戻れます。
 
 ### 4. （任意）書き込みを閉じる
 

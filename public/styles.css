@@ -1,4 +1,4 @@
-/* lp-demo — ダッシュボード。配色は :root の変数だけ変えれば全体に反映されます */
+/* リサーチ書庫ダッシュボード。配色は :root の変数だけ変えれば全体に反映されます */
 
 :root {
   --color-bg: #f6f1e8;
@@ -33,43 +33,64 @@ body {
 .container {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface);
 }
 
 .header-inner {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
+  gap: 12px;
+  padding: 12px 16px;
+  min-height: 52px;
 }
 
 .brand {
   font-weight: 700;
   letter-spacing: 0.02em;
+  color: inherit;
+  text-decoration: none;
 }
 
-.header-note {
-  color: var(--color-text-muted);
+.brand:hover,
+.header-action:hover {
+  color: var(--color-accent);
+}
+
+.header-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
   font-size: 0.9rem;
+  text-decoration: none;
 }
 
-.hero {
-  padding: 40px 0 16px;
-}
-
-.hero h1 {
-  font-size: 1.7rem;
-  line-height: 1.35;
-  margin-bottom: 10px;
-}
-
-.lead {
-  color: var(--color-text-muted);
+.header-action:hover {
+  background: var(--color-accent-strong);
+  color: #fff;
 }
 
 .upload-card,
@@ -77,14 +98,52 @@ body {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  padding: 24px;
-  margin: 20px 0;
+  padding: 16px;
+  margin: 16px 0;
 }
 
-.upload-card h2,
-.list-card h2 {
-  font-size: 1.05rem;
-  margin-bottom: 16px;
+.list-card {
+  margin-top: 16px;
+}
+
+.list-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.list-heading-block h1,
+.upload-card h2 {
+  font-size: 1.15rem;
+  line-height: 1.3;
+}
+
+.list-count {
+  margin-top: 2px;
+}
+
+.search-label {
+  flex: 1 1 180px;
+  max-width: 280px;
+}
+
+.search-label input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  font: inherit;
+}
+
+.upload-lead {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 12px;
 }
 
 .dropzone {
@@ -92,13 +151,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 160px;
+  gap: 4px;
+  min-height: 96px;
   border: 2px dashed var(--color-border);
   border-radius: var(--radius);
   background: var(--color-bg);
   cursor: pointer;
-  padding: 24px;
+  padding: 16px;
   text-align: center;
 }
 
@@ -123,7 +182,7 @@ body {
 .file-name,
 .muted {
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .upload-row {
@@ -132,7 +191,7 @@ body {
   align-items: end;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .ttl-label {
@@ -144,6 +203,7 @@ body {
 
 .ttl-label select {
   min-width: 180px;
+  min-height: 44px;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--color-border);
@@ -152,11 +212,14 @@ body {
 }
 
 .button {
-  display: inline-block;
-  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 14px;
   border: 1px solid transparent;
   border-radius: 10px;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
   background: var(--color-bg);
@@ -228,59 +291,104 @@ body {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .host-item {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 10px;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 14px 0;
-  border-top: 1px solid var(--color-border);
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #fff;
 }
 
-.host-item:first-child {
-  border-top: none;
-  padding-top: 0;
-}
-
-.host-meta {
-  flex: 1;
-  min-width: 200px;
-}
-
-.host-meta a {
-  color: var(--color-accent);
-  font-weight: 600;
+.host-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  color: inherit;
   text-decoration: none;
 }
 
-.host-meta a:hover {
-  text-decoration: underline;
+.host-title {
+  font-weight: 700;
+  font-size: 0.98rem;
+  line-height: 1.35;
+  color: var(--color-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.host-main:hover .host-title {
+  color: var(--color-accent);
+}
+
+.host-meta-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 10px;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
 }
 
 .host-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.host-actions .button {
+  min-height: 36px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
 }
 
 .site-footer {
-  padding: 32px 0 48px;
+  padding: 24px 0 40px;
   color: var(--color-text-muted);
   font-size: 0.85rem;
 }
 
+#upload {
+  scroll-margin-top: 64px;
+}
+
 @media (max-width: 640px) {
-  .hero h1 {
-    font-size: 1.4rem;
+  .container {
+    padding: 0 12px;
+  }
+
+  .list-toolbar,
+  .search-label {
+    max-width: none;
+    width: 100%;
+  }
+
+  .host-item {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .host-actions {
+    justify-content: flex-end;
   }
 
   .share-row,
   .upload-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .ttl-label select,
+  .button-primary {
+    width: 100%;
   }
 }
