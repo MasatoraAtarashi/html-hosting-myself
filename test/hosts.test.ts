@@ -38,6 +38,8 @@ describe("hosting API", () => {
     expect(pageHtml).toContain("一覧へ");
     expect(pageHtml).toContain('href="/"');
     expect(pageHtml).toContain('id="hh-lib-chrome"');
+    expect(pageHtml).toContain('id="hh-lib-notes"');
+    expect(pageHtml).toContain('src="/hh-lib-annotate.js"');
   });
 
   it("共有 URL は認証なしで HTML を返す", async () => {
@@ -78,6 +80,7 @@ describe("hosting API", () => {
     expect(cssText).toContain("color:#c00");
     expect(cssText).not.toContain("一覧へ");
     expect(cssText).not.toContain("hh-lib-chrome");
+    expect(cssText).not.toContain("hh-lib-annotate");
   });
 
   it("ZIP 内のネストした HTML にも書庫バーを付ける", async () => {
@@ -95,6 +98,8 @@ describe("hosting API", () => {
     expect(text).toContain("nested page");
     expect(text).toContain("一覧へ");
     expect(text).toContain('href="/"');
+    expect(text).toContain(`data-page-path="notes/a.html"`);
+    expect(text).toContain('src="/hh-lib-annotate.js"');
   });
 
   it("複数ホストでは前へ / 次へが一覧順（新しい→古い）になる", async () => {

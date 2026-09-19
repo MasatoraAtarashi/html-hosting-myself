@@ -25,6 +25,7 @@ export function createApp() {
   app.get("/favicon.ico", servePublicAsset("/favicon.ico"));
   app.get("/favicon.png", servePublicAsset("/favicon.png"));
   app.get("/apple-touch-icon.png", servePublicAsset("/apple-touch-icon.png"));
+  app.get("/hh-lib-annotate.js", servePublicAsset("/hh-lib-annotate.js"));
   app.route("/api", api);
   // /p/:slug と /p/:slug/… を同じハンドラで処理する（相対パスの解決のため末尾スラッシュへリダイレクト）
   app.get("/p/:slug", serveHost);

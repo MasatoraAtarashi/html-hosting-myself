@@ -38,6 +38,9 @@
       "bucket_name": "html-hosting-myself",
     },
   ],
+  "ai": {
+    "binding": "AI",
+  },
   // 期限切れホストの掃除（UTC 4:00）。個別 GET 時にも期限切れなら 410 を返す
   "triggers": {
     "crons": ["0 4 * * *"],

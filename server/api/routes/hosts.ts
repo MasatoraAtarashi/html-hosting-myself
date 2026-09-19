@@ -3,11 +3,12 @@ import { desc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { createDb } from "../../../db/client";
-import { hosts } from "../../../db/schema";
+import { annotations, hosts } from "../../../db/schema";
 import type { AppEnv } from "../../env";
 import { deleteHostObjects } from "../../hosting/cleanup";
 import { expiresAtFromTtl, type TtlOption } from "../../hosting/limits";
 import { isValidSlug } from "../../hosting/slug";
+import { annotationsRoute } from "./annotations";
 
 const slugParamSchema = z.object({
   slug: z.string().regex(/^[a-z0-9]{6,16}$/),
@@ -18,6 +19,7 @@ const ttlBodySchema = z.object({
 });
 
 export const hostsRoute = new Hono<AppEnv>()
+  .route("/:slug/annotations", annotationsRoute)
   .get("/", async (c) => {
     const db = createDb(c.env.DB);
     const items = await db.select().from(hosts).orderBy(desc(hosts.createdAt));
@@ -69,10 +71,16 @@ export const hostsRoute = new Hono<AppEnv>()
       return c.json({ error: "Not Found" }, 404);
     }
     const db = createDb(c.env.DB);
-    const [deleted] = await db.delete(hosts).where(eq(hosts.slug, slug)).returning();
-    if (!deleted) {
+    const [existing] = await db
+      .select({ slug: hosts.slug })
+      .from(hosts)
+      .where(eq(hosts.slug, slug))
+      .limit(1);
+    if (!existing) {
       return c.json({ error: "Not Found" }, 404);
     }
+    await db.delete(annotations).where(eq(annotations.slug, slug));
+    await db.delete(hosts).where(eq(hosts.slug, slug));
     await deleteHostObjects(c.env.BUCKET, slug);
     return c.body(null, 204);
   });

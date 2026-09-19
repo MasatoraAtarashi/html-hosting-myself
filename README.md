@@ -72,7 +72,8 @@ pnpm exec wrangler secret put API_TOKEN
 - **Worker 名**: `html-hosting-myself`
 - **オブジェクトストレージ**: Cloudflare R2 バケット `html-hosting-myself`（binding `BUCKET`）。Deploy が GitHub secrets のアカウントに作成する
 - **メタデータ**: Cloudflare D1 `html-hosting-myself-db` + Drizzle ORM。UUID は Deploy が作成時に解決する
-- **認証**: Cloudflare Access ヘッダ、または `Authorization: Bearer <API_TOKEN>`。どちらも未設定の初回はダッシュボード書き込みを許可する
+- **メモ / 追記リサーチ**: D1 `annotations` テーブル。追記リサーチは Workers AI（binding `AI`）
+- **認証**: Cloudflare Access ヘッダ、または `Authorization: Bearer <API_TOKEN>`。どちらも未設定の初回はダッシュボード書き込みを許可する。ページ上のメモ API は anonymous を拒否する
 - **テスト**: vitest + @cloudflare/vitest-pool-workers
 - **Observability**: Workers Logs / Metrics が既定で ON
 
@@ -96,6 +97,16 @@ http://localhost:8787 で開きます。
 3. 発行された URL をコピーして、あとからスマホなどで開く
 4. 一覧から削除、または期限付きにしたものを「期限なしにする」ができる
 
+### スマホでメモ / 追記リサーチ
+
+閲覧ページ（`/p/:slug/`）で本文を選択すると、下に **メモ** と **追記リサーチ** が出ます。書庫バーの「メモ」から、そのページに残した注釈一覧も開けます。
+
+- メモは選択箇所（引用テキスト）に紐づけて D1 に保存します。再訪するとハイライトとピンが復元されます
+- 追記リサーチは選択箇所 + ページ題 + 任意の質問を Workers AI に渡し、日本語の整理結果を同じ箇所に保存します（ライブ検索はしません。文脈中の URL は出典として使います）
+- メモ API は Cloudflare Access のメール、または `API_TOKEN` の Bearer が必要です。ページ本体が公開でも、注釈は世界書き込みになりません
+
+ZIP のサブページ（例: `/p/:slug/notes/a.html`）でも、パスごとに注釈を分けて保存します。
+
 ZIP は共通のルートフォルダを自動で剥がします。HTML は `Content-Type: text/html` でページとして描画されます。閲覧 URL（`/p/*`）はログイン不要です。
 
 ## API
@@ -108,12 +119,17 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
 
 `API_TOKEN` が未設定のときは、Authorization ヘッダなしでも同じフォームを送れます。
 
-| メソッド | パス               | 内容                                                                              |
-| -------- | ------------------ | --------------------------------------------------------------------------------- |
-| `POST`   | `/api/upload`      | `file`（html/zip）と任意の `ttl`（省略時は `keep`。`1d` / `7d` / `30d` / `keep`） |
-| `GET`    | `/api/hosts`       | ホスト一覧                                                                        |
-| `PATCH`  | `/api/hosts/:slug` | `{ "ttl": "keep" }` などで期限を変更                                              |
-| `DELETE` | `/api/hosts/:slug` | 削除（R2 上のファイルも消す）                                                     |
+| メソッド | パス                                    | 内容                                                                              |
+| -------- | --------------------------------------- | --------------------------------------------------------------------------------- |
+| `POST`   | `/api/upload`                           | `file`（html/zip）と任意の `ttl`（省略時は `keep`。`1d` / `7d` / `30d` / `keep`） |
+| `GET`    | `/api/hosts`                            | ホスト一覧                                                                        |
+| `PATCH`  | `/api/hosts/:slug`                      | `{ "ttl": "keep" }` などで期限を変更                                              |
+| `DELETE` | `/api/hosts/:slug`                      | 削除（R2 上のファイルとメモも消す）                                               |
+| `GET`    | `/api/hosts/:slug/annotations`          | メモ一覧（`?path=` でページ絞り込み）                                             |
+| `POST`   | `/api/hosts/:slug/annotations`          | メモ作成 `{ quote, body, pagePath }`                                              |
+| `POST`   | `/api/hosts/:slug/annotations/research` | 追記リサーチ（Workers AI）。結果を同じ箇所に保存                                  |
+| `PATCH`  | `/api/hosts/:slug/annotations/:id`      | メモ本文の更新                                                                    |
+| `DELETE` | `/api/hosts/:slug/annotations/:id`      | メモ削除                                                                          |
 
 ## 主なコマンド
 
@@ -130,7 +146,13 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
 
 ## Cloudflare Access（後から足す場合）
 
-初回は Access なしです。本番でダッシュボードを閉じたいときは Zero Trust で Self-hosted Application を追加し、`/p/*` に Bypass を付ければ閲覧 URL はログインなしのままにできます。エージェントからの `POST /api/upload` は `/api/*` を Bypass し、Worker 側の `API_TOKEN` で守ります。
+初回は Access なしです。本番でダッシュボードを閉じたいときは Zero Trust で Self-hosted Application を追加し、`/p/*` に Bypass を付ければ閲覧 URL はログインなしのままにできます。エージェントからの `POST /api/upload` は `/api/*` を Bypass し、Worker 側の `API_TOKEN` で守ります。ページ上のメモ / 追記リサーチは Access のメールヘッダか `API_TOKEN` が無いと 401 になります。
+
+## Workers AI
+
+`wrangler.jsonc` の `"ai": { "binding": "AI" }` で Workers AI を繋いでいます。追記リサーチは `@cf/meta/llama-3.1-8b-instruct-fast` を使います。
+
+ダッシュボードで初めて Workers AI を使うアカウントは、[Workers AI](https://dash.cloudflare.com/?to=/:account/ai/workers-ai) で利用規約への同意が必要な場合があります。CI の `wrangler deploy` ではこのトグルを代行できません。モデル呼び出しが 503 になるときは、そこを確認してください。
 
 ## エージェント向け
 

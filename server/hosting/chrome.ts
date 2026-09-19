@@ -6,6 +6,7 @@ export interface ArchiveNavItem {
 export interface ArchiveChromeInput {
   currentSlug: string;
   currentTitle: string;
+  currentPagePath: string;
   hosts: ArchiveNavItem[];
 }
 
@@ -156,6 +157,34 @@ function chromeStyles(): string {
   text-overflow:ellipsis !important;
 }
 #hh-lib-chrome .hh-lib-menu a[aria-current="page"]{background:#ecfdf8 !important;color:#0f766e !important;font-weight:700 !important;}
+#hh-lib-chrome button#hh-lib-notes{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:44px !important;
+  min-width:44px !important;
+  padding:0 10px !important;
+  border:0 !important;
+  border-radius:10px !important;
+  background:#f6f1e8 !important;
+  color:#1c1917 !important;
+  font:inherit !important;
+  cursor:pointer !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  box-shadow:none !important;
+  margin:0 !important;
+}
+#hh-lib-annot-root{
+  all:initial !important;
+  position:fixed !important;
+  inset:0 !important;
+  width:auto !important;
+  height:auto !important;
+  pointer-events:none !important;
+  z-index:2147483646 !important;
+  contain:layout style !important;
+}
 @media (max-width:420px){
   #hh-lib-chrome{flex-wrap:wrap !important;}
   #hh-lib-chrome .hh-lib-title{
@@ -188,6 +217,8 @@ export function buildArchiveChrome(input: ArchiveChromeInput): string {
     : `<span class="hh-lib-disabled" aria-disabled="true">次へ</span>`;
   const titleHref = `/p/${input.currentSlug}/`;
   const title = escapeHtml(input.currentTitle);
+  const slug = escapeHtml(input.currentSlug);
+  const pagePath = escapeHtml(input.currentPagePath);
   const menuItems = input.hosts
     .map((item) => {
       const current = item.slug === input.currentSlug ? ` aria-current="page"` : "";
@@ -199,11 +230,14 @@ export function buildArchiveChrome(input: ArchiveChromeInput): string {
       ? `<details><summary>ジャンプ</summary><div class="hh-lib-menu">${menuItems}</div></details>`
       : "";
 
-  return `${chromeStyles()}<div id="hh-lib-chrome" role="navigation" aria-label="書庫ナビ">
+  return `${chromeStyles()}<div id="hh-lib-chrome" role="navigation" aria-label="書庫ナビ" data-slug="${slug}" data-page-path="${pagePath}">
 ${home}
 <a class="hh-lib-title" href="${titleHref}" title="${title}">${title}</a>
-${prev}${next}${jump}
-</div>`;
+${prev}${next}
+<button type="button" id="hh-lib-notes">メモ</button>
+${jump}
+</div>
+<div id="hh-lib-annot-root" hidden></div>`;
 }
 
 export function applyArchiveChrome(response: Response, input: ArchiveChromeInput): Response {
@@ -212,6 +246,7 @@ export function applyArchiveChrome(response: Response, input: ArchiveChromeInput
     .on("body", {
       element(element) {
         element.prepend(html, { html: true });
+        element.append(`<script src="/hh-lib-annotate.js" defer></script>`, { html: true });
       },
     })
     .transform(response);

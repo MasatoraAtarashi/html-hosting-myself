@@ -22,6 +22,7 @@ export async function purgeExpiredHosts(env: Env): Promise<number> {
   const slugs = expired.results ?? [];
   for (const row of slugs) {
     await deleteHostObjects(env.BUCKET, row.slug);
+    await env.DB.prepare("DELETE FROM annotations WHERE slug = ?").bind(row.slug).run();
     await env.DB.prepare("DELETE FROM hosts WHERE slug = ?").bind(row.slug).run();
   }
 
