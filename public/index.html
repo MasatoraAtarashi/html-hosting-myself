@@ -50,7 +50,7 @@
         <h2 id="upload-heading">新しく置く</h2>
         <p class="upload-lead">
           AI が生成した HTML や静的サイトの ZIP
-          をドロップすると、書庫に残ります。既定は期限なしです。
+          をドロップすると、書庫に残ります。複数ファイルはそれぞれ別ホストになります。既定は期限なしです。
         </p>
         <form id="upload-form">
           <label id="dropzone" class="dropzone" for="file-input">
@@ -58,10 +58,11 @@
               id="file-input"
               name="file"
               type="file"
+              multiple
               accept=".html,.htm,.zip,text/html,application/zip"
             />
-            <span class="dropzone-title">.html または .zip をドロップ</span>
-            <span class="dropzone-sub">タップして選択（10MB まで）</span>
+            <span class="dropzone-title">.html / .zip をドロップ（複数可）</span>
+            <span class="dropzone-sub">タップして選択（1件 10MB、一度に 20 件まで）</span>
             <span id="file-name" class="file-name"></span>
           </label>
 
@@ -79,12 +80,14 @@
           </div>
         </form>
         <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+        <ul id="upload-errors" class="upload-errors" hidden></ul>
         <div id="share-box" class="share-box" hidden>
-          <label for="share-url">閲覧 URL</label>
+          <label for="share-url" id="share-label">閲覧 URL</label>
           <div class="share-row">
             <input id="share-url" type="text" readonly />
             <button id="copy-link" class="button" type="button">コピー</button>
           </div>
+          <ul id="share-extra" class="share-extra" hidden></ul>
         </div>
       </section>
     </main>

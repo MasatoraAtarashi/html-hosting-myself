@@ -13,5 +13,7 @@ declare global {
     LOCAL_DEV_USER_EMAIL?: string;
     // エージェント / CI 用。本番は wrangler secret、テストは wrangler.vitest.jsonc の vars
     API_TOKEN?: string;
+    // vitest 専用。本番 wrangler.jsonc には置かない
+    TEST_AI_RESPONSE?: string;
   }
 }

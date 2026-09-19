@@ -41,6 +41,7 @@ export async function serveHost(c: Context<AppEnv>): Promise<Response> {
     c.executionCtx.waitUntil(
       (async () => {
         await deleteHostObjects(c.env.BUCKET, slug);
+        await c.env.DB.prepare("DELETE FROM annotations WHERE slug = ?").bind(slug).run();
         await c.env.DB.prepare("DELETE FROM hosts WHERE slug = ?").bind(slug).run();
       })(),
     );
@@ -82,6 +83,7 @@ export async function serveHost(c: Context<AppEnv>): Promise<Response> {
   return applyArchiveChrome(response, {
     currentSlug: slug,
     currentTitle: host.title,
+    currentPagePath: relative || "index.html",
     hosts,
   });
 }

@@ -3,14 +3,20 @@ const fileInput = document.getElementById("file-input");
 const dropzone = document.getElementById("dropzone");
 const fileName = document.getElementById("file-name");
 const message = document.getElementById("form-message");
+const uploadErrors = document.getElementById("upload-errors");
 const shareBox = document.getElementById("share-box");
+const shareLabel = document.getElementById("share-label");
 const shareUrl = document.getElementById("share-url");
+const shareExtra = document.getElementById("share-extra");
 const copyLink = document.getElementById("copy-link");
 const hostList = document.getElementById("host-list");
 const listEmpty = document.getElementById("list-empty");
 const listNone = document.getElementById("list-none");
 const listCount = document.getElementById("list-count");
 const hostSearch = document.getElementById("host-search");
+const submitButton = form.querySelector('button[type="submit"]');
+
+const MAX_BATCH_UPLOADS = 20;
 
 /** @type {Array<{slug: string, title: string, url: string, createdAt: number, expiresAt: number | null, sizeBytes: number, fileCount: number}>} */
 let hostsCache = [];
@@ -18,6 +24,16 @@ let hostsCache = [];
 function setMessage(text, kind) {
   message.textContent = text;
   message.className = kind ? `form-message ${kind}` : "form-message";
+}
+
+function setUploadErrors(errors) {
+  uploadErrors.replaceChildren();
+  uploadErrors.hidden = errors.length === 0;
+  for (const entry of errors) {
+    const li = document.createElement("li");
+    li.textContent = `${entry.name}: ${entry.error}`;
+    uploadErrors.append(li);
+  }
 }
 
 function formatExpiry(expiresAt) {
@@ -204,19 +220,60 @@ dropzone.addEventListener("dragleave", () => {
   dropzone.classList.remove("dragover");
 });
 
+function selectedFiles() {
+  return Array.from(fileInput.files ?? []);
+}
+
+function describeFiles(files) {
+  if (files.length === 0) return "";
+  if (files.length === 1) return files[0].name;
+  const names = files
+    .slice(0, 3)
+    .map((file) => file.name)
+    .join("、");
+  const extra = files.length > 3 ? ` ほか${files.length - 3}件` : "";
+  return `${files.length}件: ${names}${extra}`;
+}
+
+function assignFiles(list) {
+  const transfer = new DataTransfer();
+  for (const file of list) transfer.items.add(file);
+  fileInput.files = transfer.files;
+  fileName.textContent = describeFiles(selectedFiles());
+}
+
+function showShare(items) {
+  shareExtra.replaceChildren();
+  if (items.length === 0) {
+    shareBox.hidden = true;
+    return;
+  }
+  const urls = items.map((item) => absoluteShareUrl(item.url));
+  shareUrl.value = urls[0];
+  shareLabel.textContent = items.length === 1 ? "閲覧 URL" : "閲覧 URL（1件目）";
+  shareBox.hidden = false;
+  if (items.length > 1) {
+    shareExtra.hidden = false;
+    for (const url of urls.slice(1)) {
+      const li = document.createElement("li");
+      li.textContent = url;
+      shareExtra.append(li);
+    }
+  } else {
+    shareExtra.hidden = true;
+  }
+}
+
 dropzone.addEventListener("drop", (event) => {
   event.preventDefault();
   dropzone.classList.remove("dragover");
-  const file = event.dataTransfer?.files?.[0];
-  if (!file) return;
-  const transfer = new DataTransfer();
-  transfer.items.add(file);
-  fileInput.files = transfer.files;
-  fileName.textContent = file.name;
+  const files = Array.from(event.dataTransfer?.files ?? []);
+  if (files.length === 0) return;
+  assignFiles(files.slice(0, MAX_BATCH_UPLOADS));
 });
 
 fileInput.addEventListener("change", () => {
-  fileName.textContent = fileInput.files?.[0]?.name ?? "";
+  fileName.textContent = describeFiles(selectedFiles());
 });
 
 hostSearch.addEventListener("input", () => {
@@ -225,50 +282,89 @@ hostSearch.addEventListener("input", () => {
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const file = fileInput.files?.[0];
-  if (!file) {
+  const files = selectedFiles();
+  if (files.length === 0) {
     setMessage("ファイルを選択してください", "error");
     return;
   }
+  if (files.length > MAX_BATCH_UPLOADS) {
+    setMessage(`一度に置けるのは ${MAX_BATCH_UPLOADS} 件までです`, "error");
+    return;
+  }
 
-  setMessage("アップロード中...");
   shareBox.hidden = true;
+  shareExtra.hidden = true;
+  setUploadErrors([]);
+  if (submitButton) submitButton.disabled = true;
 
-  const data = new FormData();
-  data.set("file", file);
-  data.set("ttl", document.getElementById("ttl").value);
+  const ttl = document.getElementById("ttl").value;
+  const items = [];
+  const errors = [];
 
   try {
-    const res = await fetch("/api/upload", { method: "POST", body: data });
-    const body = await res.json().catch(() => ({}));
-    if (res.status === 401) {
-      setMessage(
-        "書き込み API は API_TOKEN で保護されています。Authorization: Bearer を付けるか、secret 未設定の preview を使ってください。",
-        "error",
-      );
-      return;
-    }
-    if (!res.ok) {
-      setMessage(body.error ?? "アップロードに失敗しました", "error");
-      return;
+    for (let i = 0; i < files.length; i++) {
+      setMessage(`${i + 1} / ${files.length} 件を置いています…`);
+      const data = new FormData();
+      data.set("file", files[i]);
+      data.set("ttl", ttl);
+      try {
+        const res = await fetch("/api/upload", { method: "POST", body: data });
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          setMessage(
+            "書き込み API は API_TOKEN で保護されています。Authorization: Bearer を付けるか、secret 未設定の preview を使ってください。",
+            "error",
+          );
+          setUploadErrors(errors);
+          showShare(items);
+          if (items.length > 0) await loadHosts();
+          return;
+        }
+        if (!res.ok) {
+          errors.push({
+            name: files[i].name,
+            error: body.error ?? "アップロードに失敗しました",
+          });
+          continue;
+        }
+        items.push(body.item);
+      } catch {
+        errors.push({ name: files[i].name, error: "通信に失敗しました" });
+      }
     }
 
-    const url = absoluteShareUrl(body.item.url);
-    shareUrl.value = url;
-    shareBox.hidden = false;
-    setMessage("書庫に置きました。あとから見返す用の URL をコピーできます。", "success");
+    setUploadErrors(errors);
+    showShare(items);
+    if (items.length > 0 && errors.length === 0) {
+      setMessage(
+        items.length === 1
+          ? "書庫に置きました。あとから見返す用の URL をコピーできます。"
+          : `${items.length}件を書庫に置きました。それぞれ一覧から開けます。`,
+        "success",
+      );
+    } else if (items.length > 0) {
+      setMessage(`${items.length}件成功、${errors.length}件失敗`, "error");
+    } else {
+      setMessage(
+        errors.length ? "どのファイルも置けませんでした" : "アップロードに失敗しました",
+        "error",
+      );
+    }
+
     form.reset();
     fileName.textContent = "";
     document.getElementById("ttl").value = "keep";
     hostSearch.value = "";
     await loadHosts();
-  } catch {
-    setMessage("アップロードに失敗しました。通信環境を確認してください", "error");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 });
 
 copyLink.addEventListener("click", async () => {
-  const ok = await copyText(shareUrl.value);
+  const extras = Array.from(shareExtra.querySelectorAll("li")).map((li) => li.textContent ?? "");
+  const value = [shareUrl.value, ...extras].filter(Boolean).join("\n");
+  const ok = await copyText(value);
   setMessage(
     ok ? "リンクをコピーしました" : "URL を選択したので手動でコピーしてください",
     ok ? "success" : "",

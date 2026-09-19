@@ -1,6 +1,6 @@
 import { exports } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
-import { resolveWriter } from "../server/middleware/access-auth";
+import { resolveWriter, isIdentifiableWriter } from "../server/middleware/access-auth";
 
 describe("writeAuth ミドルウェア", () => {
   it("Access ヘッダがあれば 200 を返す", async () => {
@@ -83,5 +83,12 @@ describe("resolveWriter", () => {
         providedToken: null,
       }),
     ).toBe("dev@example.com");
+  });
+});
+
+describe("isIdentifiableWriter", () => {
+  it("Access や Bearer は通し、anonymous はメモ用に拒否する", () => {
+    expect(isIdentifiableWriter("anonymous")).toBe(false);
+    expect(isIdentifiableWriter("ok@example.com")).toBe(true);
   });
 });

@@ -23,6 +23,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  await env.DB.exec("DELETE FROM annotations;");
   await env.DB.exec("DELETE FROM hosts;");
   const listed = await env.BUCKET.list();
   await Promise.all(listed.objects.map((object) => env.BUCKET.delete(object.key)));

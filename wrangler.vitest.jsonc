@@ -29,7 +29,9 @@
       "bucket_name": "test-hosts",
     },
   ],
+  // Workers AI はリモート接続が必要なのでテストでは binding せず、TEST_AI_RESPONSE でスタブする
   "vars": {
     "API_TOKEN": "test-api-token",
+    "TEST_AI_RESPONSE": "【要約】選択箇所はテスト用の追記リサーチ結果です。\n\n【出典】ページ内の記述に基づく",
   },
 }

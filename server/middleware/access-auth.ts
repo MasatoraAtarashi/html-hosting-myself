@@ -57,6 +57,11 @@ export function resolveWriter(input: WriterInput): string | null {
   return null;
 }
 
+/** Access / Bearer / ローカル開発の身元。anonymous は書き込みフォールバックなのでメモ API では使わない */
+export function isIdentifiableWriter(userEmail: string | undefined): boolean {
+  return Boolean(userEmail) && userEmail !== "anonymous";
+}
+
 export const writeAuth = createMiddleware<AppEnv>(async (c, next) => {
   const email = resolveWriter({
     accessEmail: c.req.header("cf-access-authenticated-user-email"),
@@ -70,6 +75,14 @@ export const writeAuth = createMiddleware<AppEnv>(async (c, next) => {
     return c.json({ error: "Unauthorized" }, 401);
   }
   c.set("userEmail", email);
+  await next();
+});
+
+/** メモ / 追記リサーチは Access 身元か API_TOKEN を必須にする（API_TOKEN 未設定時の anonymous を拒否） */
+export const rejectAnonymous = createMiddleware<AppEnv>(async (c, next) => {
+  if (!isIdentifiableWriter(c.get("userEmail"))) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
   await next();
 });
 

@@ -41,6 +41,8 @@ describe("dashboard favicon", () => {
     expect(html).toContain('href="/favicon.png"');
     expect(html).toContain('rel="apple-touch-icon"');
     expect(html).toContain('href="/apple-touch-icon.png"');
+    expect(html).toContain("multiple");
+    expect(html).toContain('id="file-input"');
     expect(html).not.toContain("data:image/svg+xml");
     expect(html).not.toContain("📦");
   });

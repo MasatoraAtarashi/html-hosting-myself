@@ -19,6 +19,7 @@ describe("archive chrome builder", () => {
     const html = buildArchiveChrome({
       currentSlug: "bbbbbbbb",
       currentTitle: `Research <script>alert(1)</script>`,
+      currentPagePath: "index.html",
       hosts: [
         { slug: "aaaaaaaa", title: "新しい" },
         { slug: "bbbbbbbb", title: `Research <script>alert(1)</script>` },
@@ -33,6 +34,10 @@ describe("archive chrome builder", () => {
     expect(html).toContain('href="/p/cccccccc/"');
     expect(html).toContain("次へ");
     expect(html).toContain("ジャンプ");
+    expect(html).toContain('id="hh-lib-notes"');
+    expect(html).toContain("メモ");
+    expect(html).toContain('data-slug="bbbbbbbb"');
+    expect(html).toContain('data-page-path="index.html"');
     expect(html).not.toContain("<script>alert(1)</script>");
     expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
     expect(html).toContain("&quot;item&quot;");
@@ -42,6 +47,7 @@ describe("archive chrome builder", () => {
     const newest = buildArchiveChrome({
       currentSlug: "newnew12",
       currentTitle: "新",
+      currentPagePath: "index.html",
       hosts: [
         { slug: "newnew12", title: "新" },
         { slug: "oldold12", title: "旧" },
@@ -54,6 +60,7 @@ describe("archive chrome builder", () => {
     const oldest = buildArchiveChrome({
       currentSlug: "oldold12",
       currentTitle: "旧",
+      currentPagePath: "index.html",
       hosts: [
         { slug: "newnew12", title: "新" },
         { slug: "oldold12", title: "旧" },
