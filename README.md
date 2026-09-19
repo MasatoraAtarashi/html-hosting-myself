@@ -92,10 +92,12 @@ http://localhost:8787 で開きます。
 
 ## アップロードの流れ
 
-1. ダッシュボードで単一の `.html`、または HTML/CSS/JS/画像を含む `.zip` をドロップする
+1. ダッシュボードで `.html` / `.zip` をドロップする（**複数可**。それぞれ別ホスト）
 2. 既定 TTL は **期限なし**（必要なら 1 日 / 7 日 / 30 日も選択可）
 3. 発行された URL をコピーして、あとからスマホなどで開く
 4. 一覧から削除、または期限付きにしたものを「期限なしにする」ができる
+
+複数選択時は `N / M 件を置いています…` と進み、失敗したファイルは名前と理由が出ます。1 件 10MB、一度に 20 件までです。
 
 ### スマホでメモ / 追記リサーチ
 
@@ -114,22 +116,23 @@ ZIP は共通のルートフォルダを自動で剥がします。HTML は `Con
 ```bash
 curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/upload" \
   -H "Authorization: Bearer $API_TOKEN" \
-  -F "file=@index.html"
+  -F "file=@index.html" \
+  -F "file=@other.html"
 ```
 
-`API_TOKEN` が未設定のときは、Authorization ヘッダなしでも同じフォームを送れます。
+`API_TOKEN` が未設定のときは、Authorization ヘッダなしでも同じフォームを送れます。`file` が 1 件なら従来どおり `{ "item": ... }`（201）。2 件以上なら成功分は `items`、失敗分は `errors` です。
 
-| メソッド | パス                                    | 内容                                                                              |
-| -------- | --------------------------------------- | --------------------------------------------------------------------------------- |
-| `POST`   | `/api/upload`                           | `file`（html/zip）と任意の `ttl`（省略時は `keep`。`1d` / `7d` / `30d` / `keep`） |
-| `GET`    | `/api/hosts`                            | ホスト一覧                                                                        |
-| `PATCH`  | `/api/hosts/:slug`                      | `{ "ttl": "keep" }` などで期限を変更                                              |
-| `DELETE` | `/api/hosts/:slug`                      | 削除（R2 上のファイルとメモも消す）                                               |
-| `GET`    | `/api/hosts/:slug/annotations`          | メモ一覧（`?path=` でページ絞り込み）                                             |
-| `POST`   | `/api/hosts/:slug/annotations`          | メモ作成 `{ quote, body, pagePath }`                                              |
-| `POST`   | `/api/hosts/:slug/annotations/research` | 追記リサーチ（Workers AI）。結果を同じ箇所に保存                                  |
-| `PATCH`  | `/api/hosts/:slug/annotations/:id`      | メモ本文の更新                                                                    |
-| `DELETE` | `/api/hosts/:slug/annotations/:id`      | メモ削除                                                                          |
+| メソッド | パス                                    | 内容                                                        |
+| -------- | --------------------------------------- | ----------------------------------------------------------- |
+| `POST`   | `/api/upload`                           | `file`（html/zip、複数可）と任意の `ttl`（省略時は `keep`） |
+| `GET`    | `/api/hosts`                            | ホスト一覧                                                  |
+| `PATCH`  | `/api/hosts/:slug`                      | `{ "ttl": "keep" }` などで期限を変更                        |
+| `DELETE` | `/api/hosts/:slug`                      | 削除（R2 上のファイルとメモも消す）                         |
+| `GET`    | `/api/hosts/:slug/annotations`          | メモ一覧（`?path=` でページ絞り込み）                       |
+| `POST`   | `/api/hosts/:slug/annotations`          | メモ作成 `{ quote, body, pagePath }`                        |
+| `POST`   | `/api/hosts/:slug/annotations/research` | 追記リサーチ（Workers AI）。結果を同じ箇所に保存            |
+| `PATCH`  | `/api/hosts/:slug/annotations/:id`      | メモ本文の更新                                              |
+| `DELETE` | `/api/hosts/:slug/annotations/:id`      | メモ削除                                                    |
 
 ## 主なコマンド
 

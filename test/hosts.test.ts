@@ -241,4 +241,75 @@ describe("hosting API", () => {
     const txt = new File(["hello"], "notes.txt", { type: "text/plain" });
     expect((await upload(txt)).status).toBe(400);
   });
+
+  it("複数 HTML はそれぞれ別ホストになる", async () => {
+    const form = new FormData();
+    form.append(
+      "file",
+      new File(["<!doctype html><title>One</title><p>one</p>"], "one.html", { type: "text/html" }),
+    );
+    form.append(
+      "file",
+      new File(["<!doctype html><title>Two</title><p>two</p>"], "two.html", { type: "text/html" }),
+    );
+    const created = await exports.default.fetch("https://example.com/api/upload", {
+      method: "POST",
+      headers: accessHeaders,
+      body: form,
+    });
+    expect(created.status).toBe(201);
+    const body = (await created.json()) as {
+      item: { slug: string };
+      items: { slug: string; title: string; url: string }[];
+    };
+    expect(body.items).toHaveLength(2);
+    expect(body.item.slug).toBe(body.items[0]?.slug);
+    expect(new Set(body.items.map((item) => item.slug)).size).toBe(2);
+
+    const first = await exports.default.fetch(`https://example.com/p/${body.items[0].slug}/`);
+    const second = await exports.default.fetch(`https://example.com/p/${body.items[1].slug}/`);
+    expect(await first.text()).toContain("one");
+    expect(await second.text()).toContain("two");
+  });
+
+  it("複数のうち不正なファイルは errors に入り、他は成功する", async () => {
+    const form = new FormData();
+    form.append(
+      "file",
+      new File(["<!doctype html><title>Ok</title><p>ok</p>"], "ok.html", { type: "text/html" }),
+    );
+    form.append("file", new File(["nope"], "notes.txt", { type: "text/plain" }));
+    const created = await exports.default.fetch("https://example.com/api/upload", {
+      method: "POST",
+      headers: accessHeaders,
+      body: form,
+    });
+    expect(created.status).toBe(200);
+    const body = (await created.json()) as {
+      items: { slug: string }[];
+      errors: { name: string; error: string }[];
+    };
+    expect(body.items).toHaveLength(1);
+    expect(body.errors).toHaveLength(1);
+    expect(body.errors[0]?.name).toBe("notes.txt");
+    expect(
+      await (await exports.default.fetch(`https://example.com/p/${body.items[0].slug}/`)).text(),
+    ).toContain("ok");
+  });
+
+  it("一度に 21 件は 400", async () => {
+    const form = new FormData();
+    for (let i = 0; i < 21; i++) {
+      form.append(
+        "file",
+        new File(["<!doctype html><p>x</p>"], `x${i}.html`, { type: "text/html" }),
+      );
+    }
+    const created = await exports.default.fetch("https://example.com/api/upload", {
+      method: "POST",
+      headers: accessHeaders,
+      body: form,
+    });
+    expect(created.status).toBe(400);
+  });
 });
