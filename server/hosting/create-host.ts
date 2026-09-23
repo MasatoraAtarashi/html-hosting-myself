@@ -8,6 +8,7 @@ import {
   extensionOf,
   type TtlOption,
 } from "./limits";
+import { preparePastedHtml } from "./paste-html";
 import { generateSlug } from "./slug";
 import { extractHtmlTitle, unpackZip, ZipError } from "./zip";
 
@@ -26,6 +27,62 @@ export class UploadError extends Error {
     super(message);
     this.name = "UploadError";
   }
+}
+
+async function storeHost(input: {
+  title: string;
+  files: { path: string; data: Uint8Array }[];
+  ttl: TtlOption;
+  ownerEmail: string;
+  db: Db;
+  bucket: R2Bucket;
+  requestId?: string;
+  source: "file" | "paste";
+}): Promise<HostItem> {
+  const { title, files, ttl, ownerEmail, db, bucket, requestId, source } = input;
+  const sizeBytes = files.reduce((sum, entry) => sum + entry.data.byteLength, 0);
+  const now = Date.now();
+  const expiresAt = expiresAtFromTtl(ttl, now);
+
+  let slug = generateSlug();
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      await db.insert(hosts).values({
+        slug,
+        title,
+        createdAt: now,
+        expiresAt,
+        sizeBytes,
+        fileCount: files.length,
+        ownerEmail,
+      });
+      break;
+    } catch (error) {
+      if (attempt === 4) throw error;
+      slug = generateSlug();
+    }
+  }
+
+  await Promise.all(files.map((entry) => bucket.put(`${slug}/${entry.path}`, entry.data)));
+
+  logger.info("host uploaded", {
+    requestId,
+    slug,
+    fileCount: files.length,
+    sizeBytes,
+    ttl,
+    source,
+  });
+
+  return {
+    slug,
+    title,
+    url: `/p/${slug}/`,
+    createdAt: now,
+    expiresAt,
+    sizeBytes,
+    fileCount: files.length,
+  };
 }
 
 export async function createHostFromFile(input: {
@@ -73,46 +130,40 @@ export async function createHostFromFile(input: {
     throw error;
   }
 
-  const sizeBytes = files.reduce((sum, entry) => sum + entry.data.byteLength, 0);
-  const now = Date.now();
-  const expiresAt = expiresAtFromTtl(ttl, now);
+  return storeHost({
+    title,
+    files,
+    ttl,
+    ownerEmail,
+    db,
+    bucket,
+    requestId,
+    source: "file",
+  });
+}
 
-  let slug = generateSlug();
-  for (let attempt = 0; attempt < 5; attempt++) {
-    try {
-      await db.insert(hosts).values({
-        slug,
-        title,
-        createdAt: now,
-        expiresAt,
-        sizeBytes,
-        fileCount: files.length,
-        ownerEmail,
-      });
-      break;
-    } catch (error) {
-      if (attempt === 4) throw error;
-      slug = generateSlug();
-    }
+export async function createHostFromHtml(input: {
+  html: string;
+  title?: string | null;
+  ttl: TtlOption;
+  ownerEmail: string;
+  db: Db;
+  bucket: R2Bucket;
+  requestId?: string;
+}): Promise<HostItem> {
+  const prepared = preparePastedHtml(input.html, input.title ?? null);
+  if (!prepared.ok) {
+    throw new UploadError(prepared.error);
   }
 
-  await Promise.all(files.map((entry) => bucket.put(`${slug}/${entry.path}`, entry.data)));
-
-  logger.info("host uploaded", {
-    requestId,
-    slug,
-    fileCount: files.length,
-    sizeBytes,
-    ttl,
+  return storeHost({
+    title: prepared.title,
+    files: [{ path: "index.html", data: prepared.bytes }],
+    ttl: input.ttl,
+    ownerEmail: input.ownerEmail,
+    db: input.db,
+    bucket: input.bucket,
+    requestId: input.requestId,
+    source: "paste",
   });
-
-  return {
-    slug,
-    title,
-    url: `/p/${slug}/`,
-    createdAt: now,
-    expiresAt,
-    sizeBytes,
-    fileCount: files.length,
-  };
 }

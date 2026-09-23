@@ -146,6 +146,66 @@ body {
   margin-bottom: 12px;
 }
 
+.upload-subhead {
+  font-size: 1rem;
+  line-height: 1.3;
+  margin-top: 4px;
+}
+
+.field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.field-label input,
+.paste-html {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.paste-html {
+  min-height: 180px;
+  resize: vertical;
+  line-height: 1.5;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans JP", monospace;
+}
+
+.field-hint {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 12px;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
 .dropzone {
   display: flex;
   flex-direction: column;
@@ -257,6 +317,11 @@ body {
 
 .button-primary:hover {
   background: var(--color-accent-strong);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .button-ghost {

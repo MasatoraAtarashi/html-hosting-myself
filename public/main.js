@@ -1,7 +1,10 @@
 const form = document.getElementById("upload-form");
+const pasteForm = document.getElementById("paste-form");
 const fileInput = document.getElementById("file-input");
 const dropzone = document.getElementById("dropzone");
 const fileName = document.getElementById("file-name");
+const pasteHtml = document.getElementById("paste-html");
+const pasteTitle = document.getElementById("paste-title");
 const message = document.getElementById("form-message");
 const uploadErrors = document.getElementById("upload-errors");
 const shareBox = document.getElementById("share-box");
@@ -15,8 +18,10 @@ const listNone = document.getElementById("list-none");
 const listCount = document.getElementById("list-count");
 const hostSearch = document.getElementById("host-search");
 const submitButton = form.querySelector('button[type="submit"]');
+const pasteSubmit = pasteForm.querySelector('button[type="submit"]');
 
 const MAX_BATCH_UPLOADS = 20;
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 /** @type {Array<{slug: string, title: string, url: string, createdAt: number, expiresAt: number | null, sizeBytes: number, fileCount: number}>} */
 let hostsCache = [];
@@ -24,6 +29,16 @@ let hostsCache = [];
 function setMessage(text, kind) {
   message.textContent = text;
   message.className = kind ? `form-message ${kind}` : "form-message";
+}
+
+function setBusy(busy) {
+  if (submitButton) submitButton.disabled = busy;
+  if (pasteSubmit) pasteSubmit.disabled = busy;
+}
+
+function revealStatus() {
+  const target = shareBox.hidden ? message : shareBox;
+  target.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function setUploadErrors(errors) {
@@ -295,7 +310,7 @@ form.addEventListener("submit", async (event) => {
   shareBox.hidden = true;
   shareExtra.hidden = true;
   setUploadErrors([]);
-  if (submitButton) submitButton.disabled = true;
+  setBusy(true);
 
   const ttl = document.getElementById("ttl").value;
   const items = [];
@@ -317,6 +332,7 @@ form.addEventListener("submit", async (event) => {
           );
           setUploadErrors(errors);
           showShare(items);
+          revealStatus();
           if (items.length > 0) await loadHosts();
           return;
         }
@@ -355,9 +371,65 @@ form.addEventListener("submit", async (event) => {
     fileName.textContent = "";
     document.getElementById("ttl").value = "keep";
     hostSearch.value = "";
+    revealStatus();
     await loadHosts();
   } finally {
-    if (submitButton) submitButton.disabled = false;
+    setBusy(false);
+  }
+});
+
+pasteForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const html = pasteHtml.value ?? "";
+  if (html.trim().length === 0) {
+    setMessage("HTML を貼り付けてください", "error");
+    pasteHtml.focus();
+    return;
+  }
+  if (new Blob([html]).size > MAX_UPLOAD_BYTES) {
+    setMessage("HTML の上限は 10MB です", "error");
+    return;
+  }
+
+  shareBox.hidden = true;
+  shareExtra.hidden = true;
+  setUploadErrors([]);
+  setBusy(true);
+  setMessage("書庫に保存しています…");
+
+  const data = new FormData();
+  data.set("html", html);
+  data.set("title", pasteTitle.value ?? "");
+  data.set("ttl", document.getElementById("paste-ttl").value || "keep");
+
+  try {
+    const res = await fetch("/api/upload", { method: "POST", body: data });
+    const body = await res.json().catch(() => ({}));
+    if (res.status === 401) {
+      setMessage(
+        "書き込み API は API_TOKEN で保護されています。Authorization: Bearer を付けるか、secret 未設定の preview を使ってください。",
+        "error",
+      );
+      revealStatus();
+      return;
+    }
+    if (!res.ok || !body.item) {
+      setMessage(body.error ?? "保存に失敗しました", "error");
+      revealStatus();
+      return;
+    }
+
+    showShare([body.item]);
+    setMessage("書庫に保存しました。あとから見返す用の URL をコピーできます。", "success");
+    revealStatus();
+    pasteForm.reset();
+    document.getElementById("paste-ttl").value = "keep";
+    hostSearch.value = "";
+    await loadHosts();
+  } catch {
+    setMessage("通信に失敗しました", "error");
+  } finally {
+    setBusy(false);
   }
 });
 

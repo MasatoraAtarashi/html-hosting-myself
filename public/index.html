@@ -40,7 +40,8 @@
           </label>
         </div>
         <p id="list-empty" class="muted">
-          まだ保存したページはありません。下の「新しく置く」から HTML や ZIP を追加できます。
+          まだ保存したページはありません。下の「新しく置く」からファイルを置くか、HTML
+          を貼り付けて追加できます。
         </p>
         <p id="list-none" class="muted" hidden>一致するページがありません。</p>
         <ul id="host-list" class="host-list"></ul>
@@ -49,9 +50,67 @@
       <section class="upload-card" id="upload" aria-labelledby="upload-heading">
         <h2 id="upload-heading">新しく置く</h2>
         <p class="upload-lead">
-          AI が生成した HTML や静的サイトの ZIP
-          をドロップすると、書庫に残ります。複数ファイルはそれぞれ別ホストになります。既定は期限なしです。
+          ファイルをドロップするか、チャットに出た HTML
+          を貼り付けて書庫に残せます。既定は期限なしです。
         </p>
+
+        <h3 class="upload-subhead">HTML を貼る</h3>
+        <p class="upload-lead">
+          AI の返答をそのまま貼れます。ページ全体でも、一部の断片でも保存できます。
+        </p>
+        <form id="paste-form">
+          <label class="field-label" for="paste-html">
+            HTML
+            <textarea
+              id="paste-html"
+              name="html"
+              class="paste-html"
+              rows="8"
+              placeholder="ここに HTML を貼り付け"
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="off"
+            ></textarea>
+          </label>
+          <label class="field-label" for="paste-title">
+            タイトル（任意）
+            <input
+              id="paste-title"
+              name="title"
+              type="text"
+              maxlength="200"
+              placeholder="空欄なら HTML の title を使います"
+              autocomplete="off"
+              enterkeyhint="done"
+            />
+          </label>
+          <div class="upload-row">
+            <label class="ttl-label">
+              保存期限
+              <select id="paste-ttl" name="ttl">
+                <option value="keep" selected>期限なし（既定）</option>
+                <option value="1d">1 日</option>
+                <option value="7d">7 日</option>
+                <option value="30d">30 日</option>
+              </select>
+            </label>
+            <button class="button button-primary" type="submit">書庫に保存</button>
+          </div>
+          <p class="field-hint">上限 10MB。断片は表示できるページに整えて保存します。</p>
+        </form>
+        <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+        <ul id="upload-errors" class="upload-errors" hidden></ul>
+        <div id="share-box" class="share-box" hidden>
+          <label for="share-url" id="share-label">閲覧 URL</label>
+          <div class="share-row">
+            <input id="share-url" type="text" readonly />
+            <button id="copy-link" class="button" type="button">コピー</button>
+          </div>
+          <ul id="share-extra" class="share-extra" hidden></ul>
+        </div>
+
+        <div class="or-divider" role="separator">またはファイル</div>
+
         <form id="upload-form">
           <label id="dropzone" class="dropzone" for="file-input">
             <input
@@ -79,16 +138,6 @@
             <button class="button button-primary" type="submit">書庫に置く</button>
           </div>
         </form>
-        <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
-        <ul id="upload-errors" class="upload-errors" hidden></ul>
-        <div id="share-box" class="share-box" hidden>
-          <label for="share-url" id="share-label">閲覧 URL</label>
-          <div class="share-row">
-            <input id="share-url" type="text" readonly />
-            <button id="copy-link" class="button" type="button">コピー</button>
-          </div>
-          <ul id="share-extra" class="share-extra" hidden></ul>
-        </div>
       </section>
     </main>
 

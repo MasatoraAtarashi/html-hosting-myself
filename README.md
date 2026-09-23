@@ -54,7 +54,7 @@ secret を入れたあと:
 
 **https://html-hosting-myself.kaito-technology.workers.dev**
 
-ダッシュボードに `.html` または `.zip` をドロップすると `/p/<slug>/` の閲覧 URL が発行されます。スマホの閲覧画面からは「一覧へ」で書庫に戻れます。
+ダッシュボードで `.html` / `.zip` をドロップするか、HTML を貼り付けると `/p/<slug>/` の閲覧 URL が発行されます。スマホの閲覧画面からは「一覧へ」で書庫に戻れます。
 
 ### 4. （任意）書き込みを閉じる
 
@@ -92,12 +92,12 @@ http://localhost:8787 で開きます。
 
 ## アップロードの流れ
 
-1. ダッシュボードで `.html` / `.zip` をドロップする（**複数可**。それぞれ別ホスト）
-2. 既定 TTL は **期限なし**（必要なら 1 日 / 7 日 / 30 日も選択可）
+1. ダッシュボードで `.html` / `.zip` をドロップする（**複数可**。それぞれ別ホスト）。チャットに出た HTML は、下の「HTML を貼る」に貼って保存できる（ページ全体でも断片でも可。断片は表示用の HTML で包む）
+2. 既定 TTL は **期限なし**（必要なら 1 日 / 7 日 / 30 日も選択可）。貼り付け時のタイトルは任意で、空なら HTML の `<title>` を使う
 3. 発行された URL をコピーして、あとからスマホなどで開く
 4. 一覧から削除、または期限付きにしたものを「期限なしにする」ができる
 
-複数選択時は `N / M 件を置いています…` と進み、失敗したファイルは名前と理由が出ます。1 件 10MB、一度に 20 件までです。
+複数選択時は `N / M 件を置いています…` と進み、失敗したファイルは名前と理由が出ます。1 件 10MB、一度に 20 件までです。貼り付け HTML も 10MB までです。
 
 ### スマホでメモ / 追記リサーチ
 
@@ -122,17 +122,26 @@ curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/uploa
 
 `API_TOKEN` が未設定のときは、Authorization ヘッダなしでも同じフォームを送れます。`file` が 1 件なら従来どおり `{ "item": ... }`（201）。2 件以上なら成功分は `items`、失敗分は `errors` です。
 
-| メソッド | パス                                    | 内容                                                        |
-| -------- | --------------------------------------- | ----------------------------------------------------------- |
-| `POST`   | `/api/upload`                           | `file`（html/zip、複数可）と任意の `ttl`（省略時は `keep`） |
-| `GET`    | `/api/hosts`                            | ホスト一覧                                                  |
-| `PATCH`  | `/api/hosts/:slug`                      | `{ "ttl": "keep" }` などで期限を変更                        |
-| `DELETE` | `/api/hosts/:slug`                      | 削除（R2 上のファイルとメモも消す）                         |
-| `GET`    | `/api/hosts/:slug/annotations`          | メモ一覧（`?path=` でページ絞り込み）                       |
-| `POST`   | `/api/hosts/:slug/annotations`          | メモ作成 `{ quote, body, pagePath }`                        |
-| `POST`   | `/api/hosts/:slug/annotations/research` | 追記リサーチ（Workers AI）。結果を同じ箇所に保存            |
-| `PATCH`  | `/api/hosts/:slug/annotations/:id`      | メモ本文の更新                                              |
-| `DELETE` | `/api/hosts/:slug/annotations/:id`      | メモ削除                                                    |
+HTML をテキストで置く場合は `file` の代わりに `html` を送ります。任意の `title` と `ttl`（省略時は `keep`）も同じです。`file` と `html` は同時に指定できません。
+
+```bash
+curl -X POST "https://html-hosting-myself.kaito-technology.workers.dev/api/upload" \
+  -H "Authorization: Bearer $API_TOKEN" \
+  -F "html=<h1>メモ</h1><p>断片でも置けます</p>" \
+  -F "title=チャットのメモ"
+```
+
+| メソッド | パス                                    | 内容                                                                                            |
+| -------- | --------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `POST`   | `/api/upload`                           | `file`（html/zip、複数可）または `html`（貼り付け）。任意の `title` と `ttl`（省略時は `keep`） |
+| `GET`    | `/api/hosts`                            | ホスト一覧                                                                                      |
+| `PATCH`  | `/api/hosts/:slug`                      | `{ "ttl": "keep" }` などで期限を変更                                                            |
+| `DELETE` | `/api/hosts/:slug`                      | 削除（R2 上のファイルとメモも消す）                                                             |
+| `GET`    | `/api/hosts/:slug/annotations`          | メモ一覧（`?path=` でページ絞り込み）                                                           |
+| `POST`   | `/api/hosts/:slug/annotations`          | メモ作成 `{ quote, body, pagePath }`                                                            |
+| `POST`   | `/api/hosts/:slug/annotations/research` | 追記リサーチ（Workers AI）。結果を同じ箇所に保存                                                |
+| `PATCH`  | `/api/hosts/:slug/annotations/:id`      | メモ本文の更新                                                                                  |
+| `DELETE` | `/api/hosts/:slug/annotations/:id`      | メモ削除                                                                                        |
 
 ## 主なコマンド
 
